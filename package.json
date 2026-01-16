@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 5004",
-    "build": "vite build && cp package.json dist/",
+    "build": "vite build && cp package.json .output/",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
