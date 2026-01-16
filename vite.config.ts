@@ -15,6 +15,10 @@ export default defineConfig({
       output: {
         dir: 'dist',
       },
+      // Externalize packages with ESM bundling issues
+      rollupConfig: {
+        external: ['ioredis', 'bullmq'],
+      },
     }),
     tailwindcss(),
     viteTsConfigPaths({
