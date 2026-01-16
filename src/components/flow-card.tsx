@@ -72,7 +72,7 @@ export function FlowCard({ id, name, inboundRoutes, outboundRoutes, onDelete, on
             </div>
 
             <Link
-                to="/flow/$flowId"
+                to="/app/flow/$flowId"
                 params={{ flowId: id }}
                 className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >

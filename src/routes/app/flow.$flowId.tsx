@@ -6,13 +6,12 @@ import { getRequest } from '@tanstack/react-start/server'
 import { ArrowLeft, Save, ScrollText, ShieldCheck, Zap } from 'lucide-react'
 
 
-
-import { AppLayout } from '../components/app-layout'
-import { FlowEditor } from '../components/flow-editor'
-import { LogsSheet } from '../components/logs-modal'
-import { Button } from '../components/ui/button'
-import { Switch } from '../components/ui/switch'
-import type { FlowEditorRef } from '../components/flow-editor';
+import { AppLayout } from '../../components/app-layout'
+import { FlowEditor } from '../../components/flow-editor'
+import { LogsSheet } from '../../components/logs-modal'
+import { Button } from '../../components/ui/button'
+import { Switch } from '../../components/ui/switch'
+import type { FlowEditorRef } from '../../components/flow-editor';
 import { rpc } from '@/lib/rpc-client'
 import { auth } from '@/lib/auth'
 
@@ -31,7 +30,7 @@ const flowQueryOptions = (flowId: string) => queryOptions({
     queryFn: () => (rpc.flows.get as any)({ id: flowId }),
 })
 
-export const Route = createFileRoute('/flow/$flowId')({
+export const Route = createFileRoute('/app/flow/$flowId')({
     beforeLoad: async () => {
         const session = await getSession()
         if (!session?.user) {
@@ -103,7 +102,7 @@ function FlowEditorPage() {
                 {/* Header */}
                 <header className="h-14 border-b border-border flex items-center justify-between px-4 bg-card">
                     <div className="flex items-center gap-3">
-                        <Link to="/">
+                        <Link to="/app">
                             <Button variant="ghost" size="icon">
                                 <ArrowLeft className="w-4 h-4" />
                             </Button>
