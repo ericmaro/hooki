@@ -224,31 +224,31 @@ export function LogsSheet({ open, onOpenChange, flowId, inboundRoutes, outboundR
                                         </div>
                                         {/* Expanded inline details */}
                                         {selectedLog?.id === log.id && (
-                                            <div className="ml-5 mt-1 mb-2 p-2 bg-secondary/50 rounded text-xs space-y-2">
-                                                <div>
+                                            <div className="ml-5 mt-1 mb-2 p-2 bg-secondary/50 rounded text-xs space-y-2 overflow-hidden">
+                                                <div className="overflow-hidden">
                                                     <span className="text-muted-foreground">Request Body: </span>
-                                                    <code className="font-mono">{log.body || '(empty)'}</code>
+                                                    <pre className="font-mono text-[10px] mt-1 bg-secondary/30 p-1 rounded overflow-x-auto max-h-24 whitespace-pre-wrap break-all">{log.body || '(empty)'}</pre>
                                                 </div>
                                                 {log.deliveryAttempts && log.deliveryAttempts.length > 0 && (
-                                                    <div>
+                                                    <div className="overflow-hidden">
                                                         <span className="text-muted-foreground">Deliveries: </span>
                                                         <div className="mt-1 space-y-1">
                                                             {log.deliveryAttempts.map((attempt) => (
-                                                                <div key={attempt.id} className="space-y-1">
+                                                                <div key={attempt.id} className="space-y-1 overflow-hidden">
                                                                     <div className="flex items-center gap-2">
-                                                                        <span className={`px-1 py-0.5 rounded text-[10px] ${attempt.status === 'success' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                                                                        <span className={`px-1 py-0.5 rounded text-[10px] shrink-0 ${attempt.status === 'success' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
                                                                             {attempt.responseStatus || attempt.status}
                                                                         </span>
-                                                                        <span className="truncate flex-1">{attempt.destinationUrl}</span>
-                                                                        {attempt.responseTimeMs && <span className="text-muted-foreground">{attempt.responseTimeMs}ms</span>}
+                                                                        <span className="truncate flex-1 min-w-0">{attempt.destinationUrl}</span>
+                                                                        {attempt.responseTimeMs && <span className="text-muted-foreground shrink-0">{attempt.responseTimeMs}ms</span>}
                                                                     </div>
                                                                     {attempt.errorMessage && (
-                                                                        <div className="text-red-400 text-[10px] ml-6">Error: {attempt.errorMessage}</div>
+                                                                        <div className="text-red-400 text-[10px] ml-6 break-all">Error: {attempt.errorMessage}</div>
                                                                     )}
                                                                     {attempt.responseBody && (
-                                                                        <div className="ml-6 text-[10px] bg-secondary/30 p-1 rounded font-mono max-h-20 overflow-auto">
+                                                                        <pre className="ml-6 text-[10px] bg-secondary/30 p-1 rounded font-mono max-h-20 overflow-x-auto whitespace-pre-wrap break-all">
                                                                             {attempt.responseBody.slice(0, 500)}
-                                                                        </div>
+                                                                        </pre>
                                                                     )}
                                                                 </div>
                                                             ))}
