@@ -1,4 +1,4 @@
-name: Sync to Public
+name: Sync to Public Repo
 
 on:
   workflow_dispatch:
