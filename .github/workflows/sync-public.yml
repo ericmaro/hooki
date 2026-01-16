@@ -30,15 +30,15 @@ jobs:
           
           # Replace index.tsx with public version (redirect only)
           cat > src/routes/index.tsx << 'EOF'
-          import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
-          // Root route - redirects to dashboard
-          export const Route = createFileRoute('/')({
-            beforeLoad: () => {
-              throw redirect({ to: '/app' })
-            },
-          })
-          EOF
+// Root route - redirects to dashboard
+export const Route = createFileRoute('/')({
+  beforeLoad: () => {
+    throw redirect({ to: '/app' })
+  },
+})
+EOF
           
           # Remove any _cloud folders
           find . -type d -name "_cloud" -exec rm -rf {} + 2>/dev/null || true
@@ -49,6 +49,8 @@ jobs:
           git commit -m "chore: prepare public release" --allow-empty
       
       - name: Push to public
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
-          git remote add public https://x-access-token:${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/ericmaro/hooki.git
+          git remote add public https://${GITHUB_TOKEN}@github.com/ericmaro/hooki.git
           git push public main --force
