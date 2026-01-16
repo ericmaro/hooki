@@ -313,14 +313,14 @@ export function LogsSheet({ open, onOpenChange, flowId, inboundRoutes, outboundR
                                         </div>
                                         <div>
                                             <p className="text-xs text-muted-foreground mb-1">Body</p>
-                                            <pre className="text-xs bg-secondary p-3 rounded overflow-x-auto max-h-32">
+                                            <pre className="text-xs bg-secondary p-3 rounded overflow-x-auto whitespace-pre-wrap break-all">
                                                 {selectedLog.body ? (() => { try { return JSON.stringify(JSON.parse(selectedLog.body), null, 2) } catch { return selectedLog.body } })() : '(empty)'}
                                             </pre>
                                         </div>
                                         {selectedLog.headers && (
                                             <div>
                                                 <p className="text-xs text-muted-foreground mb-1">Headers</p>
-                                                <pre className="text-xs bg-secondary p-3 rounded overflow-x-auto max-h-32">
+                                                <pre className="text-xs bg-secondary p-3 rounded overflow-x-auto whitespace-pre-wrap break-all">
                                                     {JSON.stringify(selectedLog.headers, null, 2)}
                                                 </pre>
                                             </div>
@@ -353,7 +353,7 @@ export function LogsSheet({ open, onOpenChange, flowId, inboundRoutes, outboundR
                                                     {attempt.responseBody && (
                                                         <div>
                                                             <p className="text-xs text-muted-foreground mb-1">Response</p>
-                                                            <pre className="text-xs bg-secondary p-2 rounded overflow-x-auto max-h-24">
+                                                            <pre className="text-xs bg-secondary p-2 rounded overflow-x-auto whitespace-pre-wrap break-all">
                                                                 {(() => { try { return JSON.stringify(JSON.parse(attempt.responseBody), null, 2) } catch { return attempt.responseBody } })().slice(0, 500)}
                                                             </pre>
                                                         </div>
