@@ -90,7 +90,7 @@ function SetupPage() {
                             />
                         </svg>
                     </div>
-                    <CardTitle className="text-2xl">Welcome to Hookio</CardTitle>
+                    <CardTitle className="text-2xl">Welcome to Hooki</CardTitle>
                     <CardDescription>Create your admin account to get started</CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -70,7 +70,7 @@ function LoginPage() {
                             />
                         </svg>
                     </div>
-                    <CardTitle className="text-2xl">Hookio</CardTitle>
+                    <CardTitle className="text-2xl">Hooki</CardTitle>
                     <CardDescription>Sign in to your account</CardDescription>
                 </CardHeader>
                 <CardContent>

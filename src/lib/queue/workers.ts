@@ -36,8 +36,8 @@ export function createWebhookWorker() {
                 const headers: Record<string, string> = {
                     ...payload.headers,
                     ...destination.headers,
-                    "X-Hookio-Signature": signatureHeader,
-                    "X-Hookio-Delivery-Id": attemptId,
+                    "X-Hooki-Signature": signatureHeader,
+                    "X-Hooki-Delivery-Id": attemptId,
                 };
 
                 // Make the HTTP request

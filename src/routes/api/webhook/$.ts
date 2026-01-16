@@ -60,8 +60,8 @@ async function deliverToDestination(
         const headers: Record<string, string> = {
             ...payload.headers,
             ...(destination.headers || {}),
-            "X-Hookio-Signature": signatureHeader,
-            "X-Hookio-Delivery-Id": attemptId,
+            "X-Hooki-Signature": signatureHeader,
+            "X-Hooki-Delivery-Id": attemptId,
         };
 
         const controller = new AbortController();
@@ -155,7 +155,7 @@ export const Route = createFileRoute("/api/webhook/$")({
 
                     // Verify signature if required
                     if (flow.requireSignature) {
-                        const signature = request.headers.get("x-hookio-signature");
+                        const signature = request.headers.get("x-hooki-signature");
                         const verification = verifyWebhookSignature(flow.signingSecret, signature, body);
                         if (!verification.valid) {
                             return new Response(
@@ -169,7 +169,7 @@ export const Route = createFileRoute("/api/webhook/$")({
                     const logId = crypto.randomUUID();
                     const reqHeaders: Record<string, string> = {};
                     request.headers.forEach((value, key) => {
-                        if (!["authorization", "cookie", "x-hookio-signature"].includes(key.toLowerCase())) {
+                        if (!["authorization", "cookie", "x-hooki-signature"].includes(key.toLowerCase())) {
                             reqHeaders[key] = value;
                         }
                     });
@@ -229,8 +229,8 @@ export const Route = createFileRoute("/api/webhook/$")({
                                 status: firstResult.status || (firstResult.success ? 200 : 502),
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Hookio-Log-Id": logId,
-                                    "X-Hookio-Mode": "sync"
+                                    "X-Hooki-Log-Id": logId,
+                                    "X-Hooki-Mode": "sync"
                                 }
                             }
                         );
@@ -239,7 +239,7 @@ export const Route = createFileRoute("/api/webhook/$")({
                     // Async mode or no destinations
                     return new Response(
                         JSON.stringify({ success: true, logId, deliveries: deliveryResults.length, allSucceeded, processingTimeMs }),
-                        { status: 200, headers: { "Content-Type": "application/json", "X-Hookio-Log-Id": logId, "X-Hookio-Mode": "async" } }
+                        { status: 200, headers: { "Content-Type": "application/json", "X-Hooki-Log-Id": logId, "X-Hooki-Mode": "async" } }
                     );
                 } catch (error) {
                     console.error("[Webhook Ingress] Error:", error);

@@ -40,7 +40,7 @@ interface WebhookLog {
 
 interface ReplayStep {
     id: string
-    type: 'inbound' | 'hookio' | 'outbound'
+    type: 'inbound' | 'hooki' | 'outbound'
     route: string
     status: 'pending' | 'running' | 'success' | 'error'
     duration?: number
@@ -107,9 +107,9 @@ export function LogsSheet({ open, onOpenChange, flowId, inboundRoutes, outboundR
                 status: 'success' as const, // Already received
             },
             {
-                id: 'hookio',
-                type: 'hookio' as const,
-                route: 'hookio',
+                id: 'hooki',
+                type: 'hooki' as const,
+                route: 'hooki',
                 status: 'running' as const,
             },
             ...outboundRoutes.map((route, i) => ({
@@ -133,9 +133,9 @@ export function LogsSheet({ open, onOpenChange, flowId, inboundRoutes, outboundR
                 statusCode: 200,
             })))
         } catch (error) {
-            // Mark hookio step as error
+            // Mark hooki step as error
             setReplaySteps(prev => prev.map(s =>
-                s.id === 'hookio' ? { ...s, status: 'error' as const } : s
+                s.id === 'hooki' ? { ...s, status: 'error' as const } : s
             ))
         }
 

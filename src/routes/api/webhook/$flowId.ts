@@ -78,7 +78,7 @@ export const Route = createFileRoute("/api/webhook/$flowId")({
                     const body = await request.text();
 
                     // Verify HMAC signature
-                    const signature = request.headers.get("x-hookio-signature");
+                    const signature = request.headers.get("x-hooki-signature");
                     const verification = verifyWebhookSignature(
                         flow.signingSecret,
                         signature,
@@ -101,7 +101,7 @@ export const Route = createFileRoute("/api/webhook/$flowId")({
                     const headers: Record<string, string> = {};
                     request.headers.forEach((value, key) => {
                         // Exclude sensitive headers
-                        if (!["authorization", "cookie", "x-hookio-signature"].includes(key.toLowerCase())) {
+                        if (!["authorization", "cookie", "x-hooki-signature"].includes(key.toLowerCase())) {
                             headers[key] = value;
                         }
                     });
@@ -170,7 +170,7 @@ export const Route = createFileRoute("/api/webhook/$flowId")({
                             status: 200,
                             headers: {
                                 "Content-Type": "application/json",
-                                "X-Hookio-Log-Id": logId,
+                                "X-Hooki-Log-Id": logId,
                             },
                         }
                     );

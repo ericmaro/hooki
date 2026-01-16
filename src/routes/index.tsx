@@ -192,12 +192,12 @@ function Home() {
       })
     })
 
-    // Add central hookio node
+    // Add central hooki node
     const maxCount = Math.max(data.inboundRoutes.length, data.outboundRoutes.length, 1)
     const centerY = 100 + ((maxCount - 1) * 150) / 2
     nodes.push({
-      id: 'hookio',
-      type: 'hookio',
+      id: 'hooki',
+      type: 'hooki',
       position: { x: 350, y: centerY },
       data: {},
     })
@@ -213,20 +213,20 @@ function Home() {
       })
     })
 
-    // Connect all inbound nodes to hookio
+    // Connect all inbound nodes to hooki
     data.inboundRoutes.forEach((_, i) => {
       edges.push({
-        id: `e-inbound-${i}-hookio`,
+        id: `e-inbound-${i}-hooki`,
         source: `inbound-${i}`,
-        target: 'hookio',
+        target: 'hooki',
       })
     })
 
-    // Connect hookio to all outbound nodes
+    // Connect hooki to all outbound nodes
     data.outboundRoutes.forEach((_, i) => {
       edges.push({
-        id: `e-hookio-outbound-${i}`,
-        source: 'hookio',
+        id: `e-hooki-outbound-${i}`,
+        source: 'hooki',
         target: `outbound-${i}`,
       })
     })
@@ -253,7 +253,7 @@ function Home() {
 
     console.log('Updating flow with data:', data)
 
-    // Rebuild config from modal data, including hookio node
+    // Rebuild config from modal data, including hooki node
     const nodes: Array<any> = []
     const edges: Array<any> = []
 
@@ -267,12 +267,12 @@ function Home() {
       })
     })
 
-    // Add central hookio node
+    // Add central hooki node
     const maxCount = Math.max(data.inboundRoutes.length, data.outboundRoutes.length, 1)
     const centerY = 100 + ((maxCount - 1) * 150) / 2
     nodes.push({
-      id: 'hookio',
-      type: 'hookio',
+      id: 'hooki',
+      type: 'hooki',
       position: { x: 350, y: centerY },
       data: {},
     })
@@ -288,20 +288,20 @@ function Home() {
       })
     })
 
-    // Connect all inbound nodes to hookio
+    // Connect all inbound nodes to hooki
     data.inboundRoutes.forEach((_, i) => {
       edges.push({
-        id: `e-inbound-${i}-hookio`,
+        id: `e-inbound-${i}-hooki`,
         source: `inbound-${i}`,
-        target: 'hookio',
+        target: 'hooki',
       })
     })
 
-    // Connect hookio to all outbound nodes
+    // Connect hooki to all outbound nodes
     data.outboundRoutes.forEach((_, i) => {
       edges.push({
-        id: `e-hookio-outbound-${i}`,
-        source: 'hookio',
+        id: `e-hooki-outbound-${i}`,
+        source: 'hooki',
         target: `outbound-${i}`,
       })
     })

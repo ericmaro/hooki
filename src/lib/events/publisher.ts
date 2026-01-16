@@ -1,7 +1,7 @@
 import { redisPub, redisSub } from "../redis";
 
 // Event types for real-time updates
-export type HookioEvent =
+export type HookiEvent =
     | { type: "log:created"; flowId: string; log: WebhookLogEvent }
     | { type: "delivery:started"; logId: string; destinationId: string }
     | { type: "delivery:completed"; logId: string; attempt: DeliveryAttemptEvent }
@@ -28,14 +28,14 @@ export interface DeliveryAttemptEvent {
     errorMessage?: string;
 }
 
-const CHANNEL_PREFIX = "hookio:events:";
+const CHANNEL_PREFIX = "hooki:events:";
 
 /**
  * Publish event to Redis channel
  */
 export async function publishEvent(
     channel: string,
-    event: HookioEvent
+    event: HookiEvent
 ): Promise<void> {
     await redisPub.publish(
         `${CHANNEL_PREFIX}${channel}`,
@@ -48,7 +48,7 @@ export async function publishEvent(
  */
 export async function publishFlowEvent(
     flowId: string,
-    event: HookioEvent
+    event: HookiEvent
 ): Promise<void> {
     await publishEvent(`flow:${flowId}`, event);
 }
@@ -59,12 +59,12 @@ export async function publishFlowEvent(
 export async function* subscribeToEvents(
     channel: string,
     signal?: AbortSignal
-): AsyncGenerator<HookioEvent> {
+): AsyncGenerator<HookiEvent> {
     const fullChannel = `${CHANNEL_PREFIX}${channel}`;
 
     // Create a message queue for this subscription
-    const messageQueue: HookioEvent[] = [];
-    let resolver: ((value: HookioEvent) => void) | null = null;
+    const messageQueue: HookiEvent[] = [];
+    let resolver: ((value: HookiEvent) => void) | null = null;
     let isAborted = false;
 
     // Handle abort signal
@@ -83,7 +83,7 @@ export async function* subscribeToEvents(
         if (ch !== fullChannel) return;
 
         try {
-            const event = JSON.parse(message) as HookioEvent;
+            const event = JSON.parse(message) as HookiEvent;
 
             if (resolver) {
                 resolver(event);
@@ -108,7 +108,7 @@ export async function* subscribeToEvents(
 
             // Wait for next message or heartbeat timeout
             const event = await Promise.race([
-                new Promise<HookioEvent>((resolve) => {
+                new Promise<HookiEvent>((resolve) => {
                     resolver = resolve;
                 }),
                 new Promise<null>((resolve) =>
@@ -133,6 +133,6 @@ export async function* subscribeToEvents(
 export function subscribeToFlowEvents(
     flowId: string,
     signal?: AbortSignal
-): AsyncGenerator<HookioEvent> {
+): AsyncGenerator<HookiEvent> {
     return subscribeToEvents(`flow:${flowId}`, signal);
 }

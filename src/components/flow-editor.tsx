@@ -49,8 +49,8 @@ export interface FlowEditorRef {
     getData: () => FlowData
 }
 
-// Central Hookio node
-function HookioNode() {
+// Central Hooki node
+function HookiNode() {
     return (
         <div className="bg-primary text-primary-foreground rounded-xl px-6 py-4 min-w-[120px] shadow-lg text-center">
             <Handle
@@ -58,7 +58,7 @@ function HookioNode() {
                 position={Position.Left}
                 className="!w-3 !h-3 !bg-primary-foreground !border-2 !border-primary"
             />
-            <span className="font-semibold">hookio</span>
+            <span className="font-semibold">hooki</span>
             <Handle
                 type="source"
                 position={Position.Right}
@@ -77,8 +77,8 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
             () => ({
                 inbound: InboundNode,
                 outbound: OutboundNode,
-                hookio: HookioNode,
-                hookly: HookioNode, // Backwards compatibility for old saved configs
+                hooki: HookiNode,
+                hookly: HookiNode, // Backwards compatibility for old saved configs
             }),
             []
         )
@@ -100,12 +100,12 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
                 })
             }
 
-            // Add central hookio node
+            // Add central hooki node
             const maxCount = Math.max(inboundCount, outboundCount)
             const centerY = 80 + ((maxCount - 1) * 100) / 2
             nodes.push({
-                id: 'hookio',
-                type: 'hookio',
+                id: 'hooki',
+                type: 'hooki',
                 position: { x: 350, y: centerY },
                 data: {},
             })
@@ -148,23 +148,23 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
                 height: 20,
             }
 
-            // Connect all inbound nodes to hookio
+            // Connect all inbound nodes to hooki
             for (let i = 0; i < inboundCount; i++) {
                 edges.push({
-                    id: `e-inbound-${i + 1}-hookio`,
+                    id: `e-inbound-${i + 1}-hooki`,
                     source: `inbound-${i + 1}`,
-                    target: 'hookio',
+                    target: 'hooki',
                     animated: true,
                     style: edgeStyle,
                     markerEnd,
                 })
             }
 
-            // Connect hookio to all outbound nodes
+            // Connect hooki to all outbound nodes
             for (let i = 0; i < outboundCount; i++) {
                 edges.push({
-                    id: `e-hookio-outbound-${i + 1}`,
-                    source: 'hookio',
+                    id: `e-hooki-outbound-${i + 1}`,
+                    source: 'hooki',
                     target: `outbound-${i + 1}`,
                     animated: true,
                     style: edgeStyle,
@@ -207,11 +207,11 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
             }
             setNodes((nds) => [...nds, newNode])
 
-            // Add edge to hookio with arrow marker
+            // Add edge to hooki with arrow marker
             const newEdge: Edge = {
-                id: `e-inbound-${newCount}-hookio`,
+                id: `e-inbound-${newCount}-hooki`,
                 source: `inbound-${newCount}`,
-                target: 'hookio',
+                target: 'hooki',
                 animated: true,
                 style: { stroke: 'var(--primary)', strokeWidth: 2 },
                 markerEnd: {
@@ -237,10 +237,10 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
             }
             setNodes((nds) => [...nds, newNode])
 
-            // Add edge from hookio with arrow marker
+            // Add edge from hooki with arrow marker
             const newEdge: Edge = {
-                id: `e-hookio-outbound-${newCount}`,
-                source: 'hookio',
+                id: `e-hooki-outbound-${newCount}`,
+                source: 'hooki',
                 target: `outbound-${newCount}`,
                 animated: true,
                 style: { stroke: 'var(--primary)', strokeWidth: 2 },

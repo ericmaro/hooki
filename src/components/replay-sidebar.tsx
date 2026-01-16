@@ -4,7 +4,7 @@ import { Play, Loader2, CheckCircle2, XCircle, ArrowDownToLine, ArrowUpFromLine 
 
 interface ReplayStep {
     id: string
-    type: 'inbound' | 'hookio' | 'outbound'
+    type: 'inbound' | 'hooki' | 'outbound'
     route: string
     status: 'pending' | 'running' | 'success' | 'error'
     duration?: number
@@ -36,9 +36,9 @@ export function ReplaySidebar({ open, onClose, inboundRoutes, outboundRoutes }: 
                 status: 'pending' as const,
             })),
             {
-                id: 'hookio',
-                type: 'hookio' as const,
-                route: 'hookio',
+                id: 'hooki',
+                type: 'hooki' as const,
+                route: 'hooki',
                 status: 'pending' as const,
             },
             ...outboundRoutes.map((route, i) => ({
