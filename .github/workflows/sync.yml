@@ -1,22 +1,19 @@
-name: Sync to Public Repo
+name: Sync to Public
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      confirm:
-        description: 'Type "sync" to confirm'
-        required: true
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    if: github.event.inputs.confirm == 'sync'
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
       
       - name: Configure Git
         run: |
@@ -49,8 +46,6 @@ EOF
           git commit -m "chore: prepare public release" --allow-empty
       
       - name: Push to public
-        env:
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
-          git remote add public https://${GITHUB_TOKEN}@github.com/ericmaro/hooki.git
+          git remote add public https://x-access-token:${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/ericmaro/hooki.git
           git push public main --force
