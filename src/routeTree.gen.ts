@@ -14,13 +14,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as RpcSplatRouteImport } from './routes/rpc/$'
-import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
 import { Route as AppFlowFlowIdRouteImport } from './routes/app/flow.$flowId'
 import { Route as ApiWebhookFlowIdRouteImport } from './routes/api/webhook/$flowId'
 import { Route as ApiWebhookSplatRouteImport } from './routes/api/webhook/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppSettingsTeamIndexRouteImport } from './routes/app/settings/team/index'
-import { Route as AppSettingsBillingIndexRouteImport } from './routes/app/settings/billing/index'
 
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
@@ -47,11 +44,6 @@ const RpcSplatRoute = RpcSplatRouteImport.update({
   path: '/rpc/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
-  id: '/app/settings/',
-  path: '/app/settings/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppFlowFlowIdRoute = AppFlowFlowIdRouteImport.update({
   id: '/app/flow/$flowId',
   path: '/app/flow/$flowId',
@@ -72,16 +64,6 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppSettingsTeamIndexRoute = AppSettingsTeamIndexRouteImport.update({
-  id: '/app/settings/team/',
-  path: '/app/settings/team/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppSettingsBillingIndexRoute = AppSettingsBillingIndexRouteImport.update({
-  id: '/app/settings/billing/',
-  path: '/app/settings/billing/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -93,9 +75,6 @@ export interface FileRoutesByFullPath {
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
-  '/app/settings': typeof AppSettingsIndexRoute
-  '/app/settings/billing': typeof AppSettingsBillingIndexRoute
-  '/app/settings/team': typeof AppSettingsTeamIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -107,9 +86,6 @@ export interface FileRoutesByTo {
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
-  '/app/settings': typeof AppSettingsIndexRoute
-  '/app/settings/billing': typeof AppSettingsBillingIndexRoute
-  '/app/settings/team': typeof AppSettingsTeamIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -122,9 +98,6 @@ export interface FileRoutesById {
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
-  '/app/settings/': typeof AppSettingsIndexRoute
-  '/app/settings/billing/': typeof AppSettingsBillingIndexRoute
-  '/app/settings/team/': typeof AppSettingsTeamIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -138,9 +111,6 @@ export interface FileRouteTypes {
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
-    | '/app/settings'
-    | '/app/settings/billing'
-    | '/app/settings/team'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -152,9 +122,6 @@ export interface FileRouteTypes {
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
-    | '/app/settings'
-    | '/app/settings/billing'
-    | '/app/settings/team'
   id:
     | '__root__'
     | '/'
@@ -166,9 +133,6 @@ export interface FileRouteTypes {
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
-    | '/app/settings/'
-    | '/app/settings/billing/'
-    | '/app/settings/team/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -181,9 +145,6 @@ export interface RootRouteChildren {
   ApiWebhookSplatRoute: typeof ApiWebhookSplatRoute
   ApiWebhookFlowIdRoute: typeof ApiWebhookFlowIdRoute
   AppFlowFlowIdRoute: typeof AppFlowFlowIdRoute
-  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
-  AppSettingsBillingIndexRoute: typeof AppSettingsBillingIndexRoute
-  AppSettingsTeamIndexRoute: typeof AppSettingsTeamIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -223,13 +184,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/settings/': {
-      id: '/app/settings/'
-      path: '/app/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/app/flow/$flowId': {
       id: '/app/flow/$flowId'
       path: '/app/flow/$flowId'
@@ -258,20 +212,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/settings/team/': {
-      id: '/app/settings/team/'
-      path: '/app/settings/team'
-      fullPath: '/app/settings/team'
-      preLoaderRoute: typeof AppSettingsTeamIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app/settings/billing/': {
-      id: '/app/settings/billing/'
-      path: '/app/settings/billing'
-      fullPath: '/app/settings/billing'
-      preLoaderRoute: typeof AppSettingsBillingIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -285,9 +225,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWebhookSplatRoute: ApiWebhookSplatRoute,
   ApiWebhookFlowIdRoute: ApiWebhookFlowIdRoute,
   AppFlowFlowIdRoute: AppFlowFlowIdRoute,
-  AppSettingsIndexRoute: AppSettingsIndexRoute,
-  AppSettingsBillingIndexRoute: AppSettingsBillingIndexRoute,
-  AppSettingsTeamIndexRoute: AppSettingsTeamIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
