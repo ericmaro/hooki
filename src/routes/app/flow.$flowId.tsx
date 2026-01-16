@@ -1,8 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { queryOptions, useMutation, useSuspenseQuery } from '@tanstack/react-query'
-import { Link, createFileRoute, redirect, useRouter } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-import { getRequest } from '@tanstack/react-start/server'
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 import { ArrowLeft, Save, ScrollText, ShieldCheck, Zap } from 'lucide-react'
 
 
@@ -13,15 +11,11 @@ import { Button } from '../../components/ui/button'
 import { Switch } from '../../components/ui/switch'
 import type { FlowEditorRef } from '../../components/flow-editor';
 import { rpc } from '@/lib/rpc-client'
-import { auth } from '@/lib/auth'
 
-// Server function to check authentication
-const getSession = createServerFn({ method: 'GET' }).handler(async () => {
-    const request = getRequest()
-    const session = await auth.api.getSession({
-        headers: request.headers,
-    })
-    return session
+// Query options for projects
+const projectsQueryOptions = queryOptions({
+    queryKey: ['projects'],
+    queryFn: () => (rpc.projects.list as any)({}),
 })
 
 // Query options for flow details
@@ -31,14 +25,11 @@ const flowQueryOptions = (flowId: string) => queryOptions({
 })
 
 export const Route = createFileRoute('/app/flow/$flowId')({
-    beforeLoad: async () => {
-        const session = await getSession()
-        if (!session?.user) {
-            throw redirect({ to: '/login' })
-        }
-    },
     loader: async ({ context, params }) => {
-        await context.queryClient.ensureQueryData(flowQueryOptions(params.flowId))
+        await Promise.all([
+            context.queryClient.ensureQueryData(projectsQueryOptions),
+            context.queryClient.ensureQueryData(flowQueryOptions(params.flowId))
+        ])
     },
     component: FlowEditorPage,
 })
@@ -52,6 +43,7 @@ function FlowEditorPage() {
 
     // Fetch flow data
     const { data: flow } = useSuspenseQuery(flowQueryOptions(flowId))
+    const { data: projects = [] } = useSuspenseQuery(projectsQueryOptions)
 
     // Mutation for saving flow
     const updateFlowMutation = useMutation({
@@ -97,7 +89,13 @@ function FlowEditorPage() {
     const effectiveAsyncMode = isMultiRoute || (flow as any).asyncMode
 
     return (
-        <AppLayout>
+        <AppLayout
+            projects={projects}
+            selectedProjectId={(flow as any).projectId}
+            onSelectProject={(_projectId) => {
+                router.navigate({ to: '/app' })
+            }}
+        >
             <div className="h-full flex flex-col">
                 {/* Header */}
                 <header className="h-14 border-b border-border flex items-center justify-between px-4 bg-card">

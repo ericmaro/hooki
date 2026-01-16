@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react'
 import { queryOptions, useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-import { getRequest } from '@tanstack/react-start/server'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { Plus, Trash2 } from 'lucide-react'
 
 
@@ -24,16 +22,6 @@ import {
 } from '../../components/ui/alert-dialog'
 import { Button } from '../../components/ui/button'
 import { rpc } from '@/lib/rpc-client'
-import { auth } from '@/lib/auth'
-
-// Keep getSession as server fn for beforeLoad authentication check
-const getSession = createServerFn({ method: 'GET' }).handler(async () => {
-  const request = getRequest()
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  })
-  return session
-})
 
 // Query options for projects
 const projectsQueryOptions = queryOptions({
@@ -49,12 +37,6 @@ const flowsQueryOptions = (projectId: string | null) => queryOptions({
 })
 
 export const Route = createFileRoute('/app/')({
-  beforeLoad: async () => {
-    const session = await getSession()
-    if (!session?.user) {
-      throw redirect({ to: '/login' })
-    }
-  },
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(projectsQueryOptions)
   },

@@ -25,7 +25,14 @@ export async function runMigrations() {
     try {
         await migrate(db, { migrationsFolder: "./drizzle" });
         console.log("✅ Database migrations completed successfully");
-    } catch (error) {
+    } catch (error: any) {
+        // If the error is 'relation already exists' (42P07), we can skip it gracefully
+        // Drizzle migrator should ideally handle this, but sometimes it doesn't if the migration state is out of sync
+        if (error?.cause?.code === '42P07' || error?.code === '42P07' || (error?.message && error.message.includes('already exists'))) {
+            console.log("ℹ️ Database tables already exist, skipping migration steps.");
+            return;
+        }
+
         console.error("❌ Database migration failed:", error);
         throw error;
     } finally {

@@ -15,6 +15,11 @@ export const requireAuth = pub.middleware(async ({ context, next }) => {
         });
     }
 
+    console.log("RPC Session Data:", {
+        userId: session.user.id,
+        activeOrgId: (session.session as any).activeOrganizationId
+    });
+
     // Extend context with user info
     return next({
         context: {
@@ -28,6 +33,7 @@ export const requireAuth = pub.middleware(async ({ context, next }) => {
             session: {
                 id: session.session.id,
                 token: session.session.token,
+                activeOrganizationId: (session.session as any).activeOrganizationId,
             },
         },
     });

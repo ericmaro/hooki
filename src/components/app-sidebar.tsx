@@ -1,20 +1,23 @@
 import {
     FolderPlus,
-    LogOut,
     Settings,
-    User,
-    Workflow
+    ChevronDown,
+    Building2
 } from 'lucide-react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { Button } from './ui/button'
+import { Link } from '@tanstack/react-router'
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuGroup,
     DropdownMenuItem,
+    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from './ui/dropdown-menu'
-import { signOut } from '@/lib/auth-client'
+} from "@/components/ui/dropdown-menu"
+import { Badge } from './ui/badge'
+import { Separator } from './ui/separator'
+import { Button } from './ui/button'
+import { authClient } from '@/lib/auth-client'
 
 interface Project {
     id: string
@@ -34,14 +37,81 @@ export function AppSidebar({
     onSelectProject,
     onCreateProject,
 }: AppSidebarProps) {
-    const navigate = useNavigate()
+    const { data: organizations = [] } = authClient.useListOrganizations()
+    const { data: activeOrg } = authClient.useActiveOrganization()
+
+    const handleSwitchOrg = async (orgId: string) => {
+        try {
+            await authClient.organization.setActive({ organizationId: orgId })
+        } catch (error) {
+            console.error("Failed to set active organization:", error)
+        }
+    }
+
+    const handleCreateOrg = async () => {
+        const name = window.prompt("Enter organization name:")
+        if (name) {
+            await authClient.organization.create({
+                name,
+                slug: name.toLowerCase().replace(/\s+/g, '-'),
+            })
+        }
+    }
 
     return (
         <aside className="w-16 h-screen bg-card border-r border-border flex flex-col items-center py-4 gap-4">
-            {/* App Logo */}
-            <Link to="/" className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Workflow className="w-5 h-5 text-primary-foreground" />
-            </Link>
+            {/* Organization Switcher / App Logo */}
+            <div className="w-full px-2 mb-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <button className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors group relative">
+                            {activeOrg ? (
+                                <span className="text-lg font-bold">{activeOrg.name.charAt(0).toUpperCase()}</span>
+                            ) : (
+                                <Building2 className="w-6 h-6" />
+                            )}
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-background border border-border flex items-center justify-center">
+                                <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                            </div>
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="right" align="start" className="w-56">
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel>Organizations</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {(organizations || []).map((org) => (
+                                <DropdownMenuItem
+                                    key={org.id}
+                                    onClick={() => handleSwitchOrg(org.id)}
+                                    className="flex items-center gap-3 py-2 cursor-pointer"
+                                >
+                                    <div className="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center font-bold">
+                                        {org.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="flex-1 overflow-hidden">
+                                        <p className="text-sm font-medium truncate">{org.name}</p>
+                                    </div>
+                                    {activeOrg?.id === org.id && (
+                                        <Badge variant="secondary" className="px-1 py-0 text-[10px]">Active</Badge>
+                                    )}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                onClick={handleCreateOrg}
+                                className="flex items-center gap-2 py-2 cursor-pointer text-muted-foreground"
+                            >
+                                <Building2 className="w-4 h-4" />
+                                <span className="text-sm">Create New</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+
+            <Separator className="w-8 mb-2" />
 
             {/* Projects Section */}
             <div className="flex-1 w-full flex flex-col items-center gap-2 px-2 overflow-y-auto">
@@ -71,36 +141,15 @@ export function AppSidebar({
                 </Button>
             </div>
 
-            {/* User Nav */}
-            <DropdownMenu>
-                <DropdownMenuTrigger
-                    render={
-                        <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full">
-                            <User className="w-5 h-5" />
-                        </Button>
-                    }
-                />
-                <DropdownMenuContent side="right" align="end" sideOffset={12} className="min-w-[160px]">
-                    <DropdownMenuItem
-                        onClick={() => navigate({ to: '/setup' })}
-                        className="cursor-pointer"
-                    >
-                        <Settings className="mr-2 w-4 h-4" />
-                        Configurations
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        onClick={async () => {
-                            await signOut()
-                            window.location.href = '/login'
-                        }}
-                        className="text-destructive focus:text-destructive cursor-pointer"
-                    >
-                        <LogOut className="mr-2 w-4 h-4" />
-                        Logout
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Settings Link */}
+            <Link
+                to="/app/settings"
+                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-accent transition-colors"
+                activeProps={{ className: 'bg-primary/10 text-primary' }}
+                title="Settings"
+            >
+                <Settings className="w-5 h-5" />
+            </Link>
         </aside>
     )
 }

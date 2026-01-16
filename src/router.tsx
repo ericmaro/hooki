@@ -18,6 +18,7 @@ export const getRouter = () => {
     routeTree,
     context: {
       queryClient,
+      isCloud: false, // Default value, will be updated by root beforeLoad
     },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,

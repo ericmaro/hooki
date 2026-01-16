@@ -9,24 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SetupRouteImport } from './routes/setup'
-import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as RpcSplatRouteImport } from './routes/rpc/$'
+import { Route as AppSelectOrganizationRouteImport } from './routes/app/select-organization'
+import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
+import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
+import { Route as AppSettingsSecurityRouteImport } from './routes/app/settings/security'
+import { Route as AppSettingsProfileRouteImport } from './routes/app/settings/profile'
+import { Route as AppSettingsNotificationsRouteImport } from './routes/app/settings/notifications'
+import { Route as AppSettingsAppearanceRouteImport } from './routes/app/settings/appearance'
+import { Route as AppSettingsApiKeysRouteImport } from './routes/app/settings/api-keys'
 import { Route as AppFlowFlowIdRouteImport } from './routes/app/flow.$flowId'
 import { Route as ApiWebhookFlowIdRouteImport } from './routes/api/webhook/$flowId'
 import { Route as ApiWebhookSplatRouteImport } from './routes/api/webhook/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AuthOnboardingOrganizationRouteImport } from './routes/_auth/onboarding.organization'
+import { Route as AppSettingsCloudTeamIndexRouteImport } from './routes/app/settings/_cloud/team/index'
+import { Route as AppSettingsCloudOrganizationIndexRouteImport } from './routes/app/settings/_cloud/organization/index'
+import { Route as AppSettingsCloudBillingIndexRouteImport } from './routes/app/settings/_cloud/billing/index'
 
-const SetupRoute = SetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -35,19 +47,65 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/app/',
-  path: '/app/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
 } as any)
 const RpcSplatRoute = RpcSplatRouteImport.update({
   id: '/rpc/$',
   path: '/rpc/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppSelectOrganizationRoute = AppSelectOrganizationRouteImport.update({
+  id: '/select-organization',
+  path: '/select-organization',
+  getParentRoute: () => AppRoute,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsSecurityRoute = AppSettingsSecurityRouteImport.update({
+  id: '/settings/security',
+  path: '/settings/security',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsProfileRoute = AppSettingsProfileRouteImport.update({
+  id: '/settings/profile',
+  path: '/settings/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsNotificationsRoute =
+  AppSettingsNotificationsRouteImport.update({
+    id: '/settings/notifications',
+    path: '/settings/notifications',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppSettingsAppearanceRoute = AppSettingsAppearanceRouteImport.update({
+  id: '/settings/appearance',
+  path: '/settings/appearance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsApiKeysRoute = AppSettingsApiKeysRouteImport.update({
+  id: '/settings/api-keys',
+  path: '/settings/api-keys',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppFlowFlowIdRoute = AppFlowFlowIdRouteImport.update({
-  id: '/app/flow/$flowId',
-  path: '/app/flow/$flowId',
-  getParentRoute: () => rootRouteImport,
+  id: '/flow/$flowId',
+  path: '/flow/$flowId',
+  getParentRoute: () => AppRoute,
 } as any)
 const ApiWebhookFlowIdRoute = ApiWebhookFlowIdRouteImport.update({
   id: '/api/webhook/$flowId',
@@ -64,103 +122,197 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthOnboardingOrganizationRoute =
+  AuthOnboardingOrganizationRouteImport.update({
+    id: '/onboarding/organization',
+    path: '/onboarding/organization',
+    getParentRoute: () => AuthRoute,
+  } as any)
+const AppSettingsCloudTeamIndexRoute =
+  AppSettingsCloudTeamIndexRouteImport.update({
+    id: '/settings/_cloud/team/',
+    path: '/settings/team/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppSettingsCloudOrganizationIndexRoute =
+  AppSettingsCloudOrganizationIndexRouteImport.update({
+    id: '/settings/_cloud/organization/',
+    path: '/settings/organization/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppSettingsCloudBillingIndexRoute =
+  AppSettingsCloudBillingIndexRouteImport.update({
+    id: '/settings/_cloud/billing/',
+    path: '/settings/billing/',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/setup': typeof SetupRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof AuthLoginRoute
+  '/signup': typeof AuthSignupRoute
+  '/app/select-organization': typeof AppSelectOrganizationRoute
   '/rpc/$': typeof RpcSplatRoute
-  '/app': typeof AppIndexRoute
+  '/app/': typeof AppIndexRoute
+  '/onboarding/organization': typeof AuthOnboardingOrganizationRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
+  '/app/settings/api-keys': typeof AppSettingsApiKeysRoute
+  '/app/settings/appearance': typeof AppSettingsAppearanceRoute
+  '/app/settings/notifications': typeof AppSettingsNotificationsRoute
+  '/app/settings/profile': typeof AppSettingsProfileRoute
+  '/app/settings/security': typeof AppSettingsSecurityRoute
+  '/app/settings': typeof AppSettingsIndexRoute
+  '/app/settings/billing': typeof AppSettingsCloudBillingIndexRoute
+  '/app/settings/organization': typeof AppSettingsCloudOrganizationIndexRoute
+  '/app/settings/team': typeof AppSettingsCloudTeamIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/setup': typeof SetupRoute
+  '/login': typeof AuthLoginRoute
+  '/signup': typeof AuthSignupRoute
+  '/app/select-organization': typeof AppSelectOrganizationRoute
   '/rpc/$': typeof RpcSplatRoute
   '/app': typeof AppIndexRoute
+  '/onboarding/organization': typeof AuthOnboardingOrganizationRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
+  '/app/settings/api-keys': typeof AppSettingsApiKeysRoute
+  '/app/settings/appearance': typeof AppSettingsAppearanceRoute
+  '/app/settings/notifications': typeof AppSettingsNotificationsRoute
+  '/app/settings/profile': typeof AppSettingsProfileRoute
+  '/app/settings/security': typeof AppSettingsSecurityRoute
+  '/app/settings': typeof AppSettingsIndexRoute
+  '/app/settings/billing': typeof AppSettingsCloudBillingIndexRoute
+  '/app/settings/organization': typeof AppSettingsCloudOrganizationIndexRoute
+  '/app/settings/team': typeof AppSettingsCloudTeamIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/setup': typeof SetupRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/_auth/login': typeof AuthLoginRoute
+  '/_auth/signup': typeof AuthSignupRoute
+  '/app/select-organization': typeof AppSelectOrganizationRoute
   '/rpc/$': typeof RpcSplatRoute
   '/app/': typeof AppIndexRoute
+  '/_auth/onboarding/organization': typeof AuthOnboardingOrganizationRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
+  '/app/settings/api-keys': typeof AppSettingsApiKeysRoute
+  '/app/settings/appearance': typeof AppSettingsAppearanceRoute
+  '/app/settings/notifications': typeof AppSettingsNotificationsRoute
+  '/app/settings/profile': typeof AppSettingsProfileRoute
+  '/app/settings/security': typeof AppSettingsSecurityRoute
+  '/app/settings/': typeof AppSettingsIndexRoute
+  '/app/settings/_cloud/billing/': typeof AppSettingsCloudBillingIndexRoute
+  '/app/settings/_cloud/organization/': typeof AppSettingsCloudOrganizationIndexRoute
+  '/app/settings/_cloud/team/': typeof AppSettingsCloudTeamIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/login'
-    | '/setup'
-    | '/rpc/$'
     | '/app'
+    | '/login'
+    | '/signup'
+    | '/app/select-organization'
+    | '/rpc/$'
+    | '/app/'
+    | '/onboarding/organization'
     | '/api/auth/$'
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
+    | '/app/settings/api-keys'
+    | '/app/settings/appearance'
+    | '/app/settings/notifications'
+    | '/app/settings/profile'
+    | '/app/settings/security'
+    | '/app/settings'
+    | '/app/settings/billing'
+    | '/app/settings/organization'
+    | '/app/settings/team'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
-    | '/setup'
+    | '/signup'
+    | '/app/select-organization'
     | '/rpc/$'
     | '/app'
+    | '/onboarding/organization'
     | '/api/auth/$'
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
+    | '/app/settings/api-keys'
+    | '/app/settings/appearance'
+    | '/app/settings/notifications'
+    | '/app/settings/profile'
+    | '/app/settings/security'
+    | '/app/settings'
+    | '/app/settings/billing'
+    | '/app/settings/organization'
+    | '/app/settings/team'
   id:
     | '__root__'
     | '/'
-    | '/login'
-    | '/setup'
+    | '/_auth'
+    | '/app'
+    | '/_auth/login'
+    | '/_auth/signup'
+    | '/app/select-organization'
     | '/rpc/$'
     | '/app/'
+    | '/_auth/onboarding/organization'
     | '/api/auth/$'
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
+    | '/app/settings/api-keys'
+    | '/app/settings/appearance'
+    | '/app/settings/notifications'
+    | '/app/settings/profile'
+    | '/app/settings/security'
+    | '/app/settings/'
+    | '/app/settings/_cloud/billing/'
+    | '/app/settings/_cloud/organization/'
+    | '/app/settings/_cloud/team/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LoginRoute: typeof LoginRoute
-  SetupRoute: typeof SetupRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
   RpcSplatRoute: typeof RpcSplatRoute
-  AppIndexRoute: typeof AppIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiWebhookSplatRoute: typeof ApiWebhookSplatRoute
   ApiWebhookFlowIdRoute: typeof ApiWebhookFlowIdRoute
-  AppFlowFlowIdRoute: typeof AppFlowFlowIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/setup': {
-      id: '/setup'
-      path: '/setup'
-      fullPath: '/setup'
-      preLoaderRoute: typeof SetupRouteImport
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -172,10 +324,10 @@ declare module '@tanstack/react-router' {
     }
     '/app/': {
       id: '/app/'
-      path: '/app'
-      fullPath: '/app'
+      path: '/'
+      fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
     }
     '/rpc/$': {
       id: '/rpc/$'
@@ -184,12 +336,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/select-organization': {
+      id: '/app/select-organization'
+      path: '/select-organization'
+      fullPath: '/app/select-organization'
+      preLoaderRoute: typeof AppSelectOrganizationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_auth/signup': {
+      id: '/_auth/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/login': {
+      id: '/_auth/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/app/settings/': {
+      id: '/app/settings/'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings/security': {
+      id: '/app/settings/security'
+      path: '/settings/security'
+      fullPath: '/app/settings/security'
+      preLoaderRoute: typeof AppSettingsSecurityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings/profile': {
+      id: '/app/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/app/settings/profile'
+      preLoaderRoute: typeof AppSettingsProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings/notifications': {
+      id: '/app/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/app/settings/notifications'
+      preLoaderRoute: typeof AppSettingsNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings/appearance': {
+      id: '/app/settings/appearance'
+      path: '/settings/appearance'
+      fullPath: '/app/settings/appearance'
+      preLoaderRoute: typeof AppSettingsAppearanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings/api-keys': {
+      id: '/app/settings/api-keys'
+      path: '/settings/api-keys'
+      fullPath: '/app/settings/api-keys'
+      preLoaderRoute: typeof AppSettingsApiKeysRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/flow/$flowId': {
       id: '/app/flow/$flowId'
-      path: '/app/flow/$flowId'
+      path: '/flow/$flowId'
       fullPath: '/app/flow/$flowId'
       preLoaderRoute: typeof AppFlowFlowIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
     }
     '/api/webhook/$flowId': {
       id: '/api/webhook/$flowId'
@@ -212,19 +427,92 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/onboarding/organization': {
+      id: '/_auth/onboarding/organization'
+      path: '/onboarding/organization'
+      fullPath: '/onboarding/organization'
+      preLoaderRoute: typeof AuthOnboardingOrganizationRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/app/settings/_cloud/team/': {
+      id: '/app/settings/_cloud/team/'
+      path: '/settings/team'
+      fullPath: '/app/settings/team'
+      preLoaderRoute: typeof AppSettingsCloudTeamIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings/_cloud/organization/': {
+      id: '/app/settings/_cloud/organization/'
+      path: '/settings/organization'
+      fullPath: '/app/settings/organization'
+      preLoaderRoute: typeof AppSettingsCloudOrganizationIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings/_cloud/billing/': {
+      id: '/app/settings/_cloud/billing/'
+      path: '/settings/billing'
+      fullPath: '/app/settings/billing'
+      preLoaderRoute: typeof AppSettingsCloudBillingIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AuthRouteChildren {
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
+  AuthOnboardingOrganizationRoute: typeof AuthOnboardingOrganizationRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
+  AuthOnboardingOrganizationRoute: AuthOnboardingOrganizationRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface AppRouteChildren {
+  AppSelectOrganizationRoute: typeof AppSelectOrganizationRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppFlowFlowIdRoute: typeof AppFlowFlowIdRoute
+  AppSettingsApiKeysRoute: typeof AppSettingsApiKeysRoute
+  AppSettingsAppearanceRoute: typeof AppSettingsAppearanceRoute
+  AppSettingsNotificationsRoute: typeof AppSettingsNotificationsRoute
+  AppSettingsProfileRoute: typeof AppSettingsProfileRoute
+  AppSettingsSecurityRoute: typeof AppSettingsSecurityRoute
+  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
+  AppSettingsCloudBillingIndexRoute: typeof AppSettingsCloudBillingIndexRoute
+  AppSettingsCloudOrganizationIndexRoute: typeof AppSettingsCloudOrganizationIndexRoute
+  AppSettingsCloudTeamIndexRoute: typeof AppSettingsCloudTeamIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppSelectOrganizationRoute: AppSelectOrganizationRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppFlowFlowIdRoute: AppFlowFlowIdRoute,
+  AppSettingsApiKeysRoute: AppSettingsApiKeysRoute,
+  AppSettingsAppearanceRoute: AppSettingsAppearanceRoute,
+  AppSettingsNotificationsRoute: AppSettingsNotificationsRoute,
+  AppSettingsProfileRoute: AppSettingsProfileRoute,
+  AppSettingsSecurityRoute: AppSettingsSecurityRoute,
+  AppSettingsIndexRoute: AppSettingsIndexRoute,
+  AppSettingsCloudBillingIndexRoute: AppSettingsCloudBillingIndexRoute,
+  AppSettingsCloudOrganizationIndexRoute:
+    AppSettingsCloudOrganizationIndexRoute,
+  AppSettingsCloudTeamIndexRoute: AppSettingsCloudTeamIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LoginRoute: LoginRoute,
-  SetupRoute: SetupRoute,
+  AuthRoute: AuthRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
   RpcSplatRoute: RpcSplatRoute,
-  AppIndexRoute: AppIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiWebhookSplatRoute: ApiWebhookSplatRoute,
   ApiWebhookFlowIdRoute: ApiWebhookFlowIdRoute,
-  AppFlowFlowIdRoute: AppFlowFlowIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
