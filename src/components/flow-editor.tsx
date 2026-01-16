@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import {
     Background,
     Controls,
@@ -23,6 +23,14 @@ import type {
     Node,
     NodeTypes
 } from '@xyflow/react'
+
+// Default colors for nodes
+const DEFAULT_INBOUND_COLOR = '#3b82f6' // blue
+const DEFAULT_OUTBOUND_COLOR = '#22c55e' // green
+const HOOKI_COLOR = '#18181b' // neutral dark
+
+// Arrow marker size
+const ARROW_SIZE = 12
 
 export interface FlowData {
     nodes: Array<{
@@ -66,6 +74,48 @@ function HookiNode() {
             />
         </div>
     )
+}
+
+// Helper to get node color
+function getNodeColor(nodes: Node[], nodeId: string): string {
+    const node = nodes.find(n => n.id === nodeId)
+    if (!node) return DEFAULT_INBOUND_COLOR
+
+    if (node.type === 'hooki' || node.type === 'hookly') {
+        return HOOKI_COLOR
+    }
+
+    // Get color from node data, or use default based on type
+    const nodeColor = node.data?.color as string | undefined
+    if (nodeColor) return nodeColor
+
+    return node.type === 'inbound' ? DEFAULT_INBOUND_COLOR : DEFAULT_OUTBOUND_COLOR
+}
+
+// Create edge with dynamic color
+// For edges going TO outbound nodes, use target color; otherwise use source color
+function createStyledEdge(
+    id: string,
+    source: string,
+    target: string,
+    nodes: Node[],
+    useTargetColor?: boolean
+): Edge {
+    const colorNodeId = useTargetColor ? target : source
+    const color = getNodeColor(nodes, colorNodeId)
+    return {
+        id,
+        source,
+        target,
+        animated: true,
+        style: { stroke: color, strokeWidth: 2 },
+        markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color,
+            width: ARROW_SIZE,
+            height: ARROW_SIZE,
+        },
+    }
 }
 
 export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
@@ -123,60 +173,70 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
             return nodes
         }, [inboundCount, outboundCount, initialInbound, initialOutbound, initialConfig])
 
-        const buildEdges = useCallback(() => {
+        const buildEdges = useCallback((currentNodes: Node[]) => {
             if (initialConfig?.edges && initialConfig.edges.length > 0) {
-                // Apply animation and markers to loaded edges
-                return initialConfig.edges.map(edge => ({
-                    ...edge,
-                    animated: true,
-                    style: { stroke: 'var(--primary)', strokeWidth: 2 },
-                    markerEnd: {
-                        type: MarkerType.ArrowClosed,
-                        color: 'var(--primary)',
-                        width: 20,
-                        height: 20,
-                    },
-                })) as Array<Edge>
+                // Apply styling to loaded edges
+                return initialConfig.edges.map(edge => {
+                    const targetNode = currentNodes.find(n => n.id === edge.target)
+                    const useTargetColor = targetNode?.type === 'outbound'
+                    return createStyledEdge(edge.id, edge.source, edge.target, currentNodes, useTargetColor)
+                })
             }
 
             const edges: Array<Edge> = []
-            const edgeStyle = { stroke: 'var(--primary)', strokeWidth: 2 }
-            const markerEnd = {
-                type: MarkerType.ArrowClosed,
-                color: 'var(--primary)',
-                width: 20,
-                height: 20,
-            }
 
             // Connect all inbound nodes to hooki
             for (let i = 0; i < inboundCount; i++) {
-                edges.push({
-                    id: `e-inbound-${i + 1}-hooki`,
-                    source: `inbound-${i + 1}`,
-                    target: 'hooki',
-                    animated: true,
-                    style: edgeStyle,
-                    markerEnd,
-                })
+                const nodeId = `inbound-${i + 1}`
+                edges.push(createStyledEdge(
+                    `e-inbound-${i + 1}-hooki`,
+                    nodeId,
+                    'hooki',
+                    currentNodes
+                ))
             }
 
             // Connect hooki to all outbound nodes
             for (let i = 0; i < outboundCount; i++) {
-                edges.push({
-                    id: `e-hooki-outbound-${i + 1}`,
-                    source: 'hooki',
-                    target: `outbound-${i + 1}`,
-                    animated: true,
-                    style: edgeStyle,
-                    markerEnd,
-                })
+                const targetId = `outbound-${i + 1}`
+                edges.push(createStyledEdge(
+                    `e-hooki-outbound-${i + 1}`,
+                    'hooki',
+                    targetId,
+                    currentNodes,
+                    true // use target color for edges going to outbound nodes
+                ))
             }
 
             return edges
         }, [inboundCount, outboundCount, initialConfig])
 
-        const [nodes, setNodes, onNodesChange] = useNodesState(buildNodes())
-        const [edges, setEdges, onEdgesChange] = useEdgesState(buildEdges())
+        const initialNodes = useMemo(() => buildNodes(), [buildNodes])
+        const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+        const [edges, setEdges, onEdgesChange] = useEdgesState(buildEdges(initialNodes))
+
+        // Update edge colors when node colors change
+        useEffect(() => {
+            setEdges((currentEdges) =>
+                currentEdges.map((edge) => {
+                    // For edges going to outbound nodes, use target color
+                    const targetNode = nodes.find(n => n.id === edge.target)
+                    const useTargetColor = targetNode?.type === 'outbound'
+                    const colorNodeId = useTargetColor ? edge.target : edge.source
+                    const color = getNodeColor(nodes, colorNodeId)
+                    return {
+                        ...edge,
+                        style: { stroke: color, strokeWidth: 2 },
+                        markerEnd: {
+                            type: MarkerType.ArrowClosed,
+                            color: color,
+                            width: ARROW_SIZE,
+                            height: ARROW_SIZE,
+                        },
+                    }
+                })
+            )
+        }, [nodes, setEdges])
 
         useImperativeHandle(ref, () => ({
             getData: () => ({
@@ -207,22 +267,15 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
             }
             setNodes((nds) => [...nds, newNode])
 
-            // Add edge to hooki with arrow marker
-            const newEdge: Edge = {
-                id: `e-inbound-${newCount}-hooki`,
-                source: `inbound-${newCount}`,
-                target: 'hooki',
-                animated: true,
-                style: { stroke: 'var(--primary)', strokeWidth: 2 },
-                markerEnd: {
-                    type: MarkerType.ArrowClosed,
-                    color: 'var(--primary)',
-                    width: 20,
-                    height: 20,
-                },
-            }
+            // Add edge to hooki (color will be updated by effect)
+            const newEdge = createStyledEdge(
+                `e-inbound-${newCount}-hooki`,
+                `inbound-${newCount}`,
+                'hooki',
+                [...nodes, newNode]
+            )
             setEdges((eds) => [...eds, newEdge])
-        }, [inboundCount, setNodes, setEdges])
+        }, [inboundCount, nodes, setNodes, setEdges])
 
         const addOutbound = useCallback(() => {
             const newCount = outboundCount + 1
@@ -237,43 +290,38 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
             }
             setNodes((nds) => [...nds, newNode])
 
-            // Add edge from hooki with arrow marker
-            const newEdge: Edge = {
-                id: `e-hooki-outbound-${newCount}`,
-                source: 'hooki',
-                target: `outbound-${newCount}`,
-                animated: true,
-                style: { stroke: 'var(--primary)', strokeWidth: 2 },
-                markerEnd: {
-                    type: MarkerType.ArrowClosed,
-                    color: 'var(--primary)',
-                    width: 20,
-                    height: 20,
-                },
-            }
+            // Add edge from hooki (uses outbound node's color)
+            const newEdge = createStyledEdge(
+                `e-hooki-outbound-${newCount}`,
+                'hooki',
+                `outbound-${newCount}`,
+                [...nodes, newNode],
+                true // use target color
+            )
             setEdges((eds) => [...eds, newEdge])
-        }, [outboundCount, setNodes, setEdges])
+        }, [outboundCount, nodes, setNodes, setEdges])
 
         const onConnect = useCallback(
             (params: Connection) => {
+                const sourceColor = getNodeColor(nodes, params.source!)
                 setEdges((eds) =>
                     addEdge(
                         {
                             ...params,
                             animated: true,
-                            style: { stroke: 'var(--primary)', strokeWidth: 2 },
+                            style: { stroke: sourceColor, strokeWidth: 2 },
                             markerEnd: {
                                 type: MarkerType.ArrowClosed,
-                                color: 'var(--primary)',
-                                width: 20,
-                                height: 20,
+                                color: sourceColor,
+                                width: ARROW_SIZE,
+                                height: ARROW_SIZE,
                             },
                         },
                         eds
                     )
                 )
             },
-            [setEdges]
+            [nodes, setEdges]
         )
 
         return (

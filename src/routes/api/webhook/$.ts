@@ -28,6 +28,60 @@ function extractOutboundDestinations(config: any): Array<{ id: string; url: stri
         .filter((d: any) => d.url);
 }
 
+// Helper to get allowed IPs for a specific inbound path
+function getInboundAllowedIps(config: any, path: string): string[] | null {
+    if (!config?.nodes) return null;
+    const inboundNode = config.nodes.find(
+        (n: any) => n.type === 'inbound' &&
+            ((n.data?.path as string) === path || (n.data?.route as string) === path)
+    );
+    const allowedIps = inboundNode?.data?.allowedIps;
+    if (!allowedIps || !Array.isArray(allowedIps) || allowedIps.length === 0) {
+        return null; // No restriction
+    }
+    return allowedIps;
+}
+
+// Helper to parse CIDR notation and check if IP is in range
+function isIpInCidr(ip: string, cidr: string): boolean {
+    try {
+        const [range, bits] = cidr.split('/');
+        const mask = parseInt(bits, 10);
+        if (isNaN(mask) || mask < 0 || mask > 32) return false;
+
+        const ipToInt = (ipStr: string): number => {
+            const parts = ipStr.split('.').map(Number);
+            if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) return -1;
+            return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
+        };
+
+        const ipInt = ipToInt(ip);
+        const rangeInt = ipToInt(range);
+        if (ipInt === -1 || rangeInt === -1) return false;
+
+        const maskBits = mask === 0 ? 0 : (~0 << (32 - mask)) >>> 0;
+        return (ipInt & maskBits) === (rangeInt & maskBits);
+    } catch {
+        return false;
+    }
+}
+
+// Check if source IP is allowed
+function isIpAllowed(ip: string, allowedIps: string[]): boolean {
+    // Normalize IP (trim whitespace)
+    const normalizedIp = ip.trim();
+
+    return allowedIps.some(allowed => {
+        const normalizedAllowed = allowed.trim();
+        if (normalizedAllowed.includes('/')) {
+            // CIDR notation
+            return isIpInCidr(normalizedIp, normalizedAllowed);
+        }
+        // Exact match
+        return normalizedIp === normalizedAllowed;
+    });
+}
+
 // Find flow by inbound path
 async function findFlowByPath(path: string) {
     const allFlows = await db.query.flows.findMany({
@@ -148,6 +202,15 @@ export const Route = createFileRoute("/api/webhook/$")({
                         return new Response(
                             JSON.stringify({ error: "Flow rate limit exceeded" }),
                             { status: 429, headers: { "Content-Type": "application/json", ...getRateLimitHeaders(flowRateLimit) } }
+                        );
+                    }
+
+                    // Check IP whitelist for this inbound path
+                    const allowedIps = getInboundAllowedIps(flow.config, inboundPath);
+                    if (allowedIps && !isIpAllowed(sourceIp, allowedIps)) {
+                        return new Response(
+                            JSON.stringify({ error: "IP not allowed", sourceIp }),
+                            { status: 403, headers: { "Content-Type": "application/json" } }
                         );
                     }
 
