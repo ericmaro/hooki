@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 import { Button } from './ui/button'
+import { codeToHtml } from 'shiki'
 
 interface CodeBlockProps {
     content: string
@@ -10,33 +11,40 @@ interface CodeBlockProps {
     className?: string
 }
 
-// Simple JSON syntax highlighter (CSS-based, no dependencies)
-function highlightJson(str: string): string {
-    // Escape HTML first
-    const escaped = str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-
-    // Apply syntax highlighting
-    return escaped
-        // Strings (keys and values)
-        .replace(/"([^"\\]|\\.)*"/g, (match) => {
-            // Check if it's a key (followed by :)
-            return `<span class="text-emerald-400">${match}</span>`
-        })
-        // Numbers
-        .replace(/\b(-?\d+\.?\d*)\b/g, '<span class="text-amber-400">$1</span>')
-        // Booleans and null
-        .replace(/\b(true|false|null)\b/g, '<span class="text-purple-400">$1</span>')
-}
-
 export function CodeBlock({ content, language = 'json', className = '' }: CodeBlockProps) {
     const [copied, setCopied] = useState(false)
+    const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
+
+    // Format JSON if possible
+    let displayContent = content
+    if (language === 'json' && content) {
+        try {
+            const parsed = JSON.parse(content)
+            displayContent = JSON.stringify(parsed, null, 2)
+        } catch {
+            displayContent = content
+        }
+    }
+
+    useEffect(() => {
+        if (!displayContent) {
+            setHighlightedHtml(null)
+            return
+        }
+
+        codeToHtml(displayContent, {
+            lang: language,
+            theme: 'github-dark',
+        }).then(html => {
+            setHighlightedHtml(html)
+        }).catch(() => {
+            setHighlightedHtml(null)
+        })
+    }, [displayContent, language])
 
     const handleCopy = async () => {
         try {
-            await navigator.clipboard.writeText(content)
+            await navigator.clipboard.writeText(displayContent)
             setCopied(true)
             setTimeout(() => setCopied(false), 2000)
         } catch (err) {
@@ -44,19 +52,12 @@ export function CodeBlock({ content, language = 'json', className = '' }: CodeBl
         }
     }
 
-    // Format JSON if possible
-    let displayContent = content
-    let highlighted = false
-
-    if (language === 'json' && content) {
-        try {
-            const parsed = JSON.parse(content)
-            displayContent = JSON.stringify(parsed, null, 2)
-            highlighted = true
-        } catch {
-            // Not valid JSON, display as-is
-            displayContent = content
-        }
+    if (!content) {
+        return (
+            <pre className="text-xs bg-secondary p-3 rounded font-mono text-muted-foreground">
+                (empty)
+            </pre>
+        )
     }
 
     return (
@@ -64,7 +65,7 @@ export function CodeBlock({ content, language = 'json', className = '' }: CodeBl
             <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-secondary/80 hover:bg-secondary"
+                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-secondary/80 hover:bg-secondary z-10"
                 onClick={handleCopy}
             >
                 {copied ? (
@@ -73,16 +74,16 @@ export function CodeBlock({ content, language = 'json', className = '' }: CodeBl
                     <Copy className="h-3 w-3" />
                 )}
             </Button>
-            <pre
-                className="text-xs bg-secondary p-3 rounded overflow-x-auto whitespace-pre-wrap break-all font-mono"
-                dangerouslySetInnerHTML={
-                    highlighted
-                        ? { __html: highlightJson(displayContent) }
-                        : undefined
-                }
-            >
-                {!highlighted ? displayContent || '(empty)' : undefined}
-            </pre>
+            {highlightedHtml ? (
+                <div
+                    className="text-xs rounded overflow-x-auto [&_pre]:p-3 [&_pre]:m-0 [&_pre]:rounded [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:break-all [&_code]:whitespace-pre-wrap [&_code]:break-all"
+                    dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+                />
+            ) : (
+                <pre className="text-xs bg-secondary p-3 rounded overflow-x-auto whitespace-pre-wrap break-all font-mono">
+                    {displayContent}
+                </pre>
+            )}
         </div>
     )
 }
