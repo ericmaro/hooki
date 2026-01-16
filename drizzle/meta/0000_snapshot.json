@@ -1,5 +1,5 @@
 {
-  "id": "7d2daa55-34c5-4395-b3bf-3ba082495a47",
+  "id": "5c114b52-cc97-459f-aeb0-a3ebaaade8bd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -334,7 +334,13 @@
           "name": "destination_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "destination_url": {
+          "name": "destination_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "attempt_number": {
           "name": "attempt_number",
@@ -568,6 +574,20 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "require_signature": {
+          "name": "require_signature",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "async_mode": {
+          "name": "async_mode",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "rate_limit_per_minute": {
           "name": "rate_limit_per_minute",

@@ -1,1 +1,0 @@
-ALTER TABLE "flows" ADD COLUMN "async_mode" boolean DEFAULT false NOT NULL;

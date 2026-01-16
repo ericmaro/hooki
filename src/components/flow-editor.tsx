@@ -78,6 +78,7 @@ export const FlowEditor = forwardRef<FlowEditorRef, FlowEditorProps>(
                 inbound: InboundNode,
                 outbound: OutboundNode,
                 hookio: HookioNode,
+                hookly: HookioNode, // Backwards compatibility for old saved configs
             }),
             []
         )

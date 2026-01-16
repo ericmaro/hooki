@@ -49,7 +49,8 @@ CREATE TABLE "verifications" (
 CREATE TABLE "delivery_attempts" (
 	"id" text PRIMARY KEY NOT NULL,
 	"webhook_log_id" text NOT NULL,
-	"destination_id" text NOT NULL,
+	"destination_id" text,
+	"destination_url" text,
 	"attempt_number" integer DEFAULT 1 NOT NULL,
 	"status" text DEFAULT 'pending' NOT NULL,
 	"response_status" integer,
@@ -82,6 +83,8 @@ CREATE TABLE "flows" (
 	"is_active" boolean DEFAULT true NOT NULL,
 	"config" jsonb,
 	"signing_secret" text NOT NULL,
+	"require_signature" boolean DEFAULT true NOT NULL,
+	"async_mode" boolean DEFAULT false NOT NULL,
 	"rate_limit_per_minute" integer DEFAULT 1000,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL

@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768480394348,
-      "tag": "0000_watery_carnage",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1768548487902,
-      "tag": "0001_majestic_chronomancer",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1768553155215,
-      "tag": "0002_perfect_guardian",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1768554647071,
-      "tag": "0003_kind_karma",
+      "when": 1768555949736,
+      "tag": "0000_vengeful_joshua_kane",
       "breakpoints": true
     }
   ]
