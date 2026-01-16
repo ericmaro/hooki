@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite dev --port 5004",
     "build": "vite build && cp package.json dist/",
+    "start": "node dist/server/index.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
