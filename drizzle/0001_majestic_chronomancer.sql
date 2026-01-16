@@ -1,0 +1,1 @@
+ALTER TABLE "flows" ADD COLUMN "require_signature" boolean DEFAULT true NOT NULL;
