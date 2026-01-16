@@ -1,0 +1,54 @@
+name: Sync to Public
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "sync" to confirm'
+        required: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'sync'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+      
+      - name: Remove private code
+        run: |
+          # Remove settings routes (billing, team)
+          rm -rf src/routes/app/settings
+          
+          # Replace index.tsx with public version (redirect only)
+          cat > src/routes/index.tsx << 'EOF'
+          import { createFileRoute, redirect } from '@tanstack/react-router'
+
+          // Root route - redirects to dashboard
+          export const Route = createFileRoute('/')({
+            beforeLoad: () => {
+              throw redirect({ to: '/app' })
+            },
+          })
+          EOF
+          
+          # Remove any _cloud folders
+          find . -type d -name "_cloud" -exec rm -rf {} + 2>/dev/null || true
+          find . -type d -name "cloud-private" -exec rm -rf {} + 2>/dev/null || true
+          
+          # Commit changes
+          git add -A
+          git commit -m "chore: prepare public release" --allow-empty
+      
+      - name: Push to public
+        run: |
+          git remote add public https://x-access-token:${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/ericmaro/hooki.git
+          git push public main --force
