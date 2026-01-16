@@ -1,8 +1,18 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { LandingPage } from '../components/_cloud/landing-page'
 
-// Root route - redirects to dashboard
+// Check if we're in cloud mode
+const isCloudMode = typeof process !== 'undefined' && process.env.HOOKI_MODE === 'cloud'
+
+// Root index route
+// - Cloud mode: Show marketing landing page (TODO: implement)
+// - Self-hosted: Redirect to /app dashboard
 export const Route = createFileRoute('/')({
   beforeLoad: () => {
-    throw redirect({ to: '/app' })
+    // In non-cloud mode, redirect to dashboard
+    if (!isCloudMode) {
+      throw redirect({ to: '/app' })
+    }
   },
+  component: LandingPage,
 })

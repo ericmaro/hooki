@@ -3,12 +3,25 @@ import { protectedProcedure } from "../middleware";
 import { pub } from "../os";
 import { db } from "@/lib/db";
 import { projects } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
+import { env } from "@/lib/env";
 
 export const projectsRouter = pub.router({
     list: protectedProcedure.handler(async ({ context }) => {
+        const isCloud = env.HOOKI_MODE === 'cloud';
+
+        if (isCloud && !context.session.activeOrganizationId) {
+            console.error("RPC Error: projects.list called without an active organization context");
+            return []; // Return empty list instead of crashing, or throw an error
+        }
+
         const result = await db.query.projects.findMany({
-            where: eq(projects.userId, context.user.id),
+            where: isCloud
+                ? and(
+                    eq(projects.userId, context.user.id),
+                    eq(projects.organizationId, context.session.activeOrganizationId as string)
+                )
+                : eq(projects.userId, context.user.id),
             orderBy: [desc(projects.createdAt)],
         });
         return result;
@@ -17,6 +30,7 @@ export const projectsRouter = pub.router({
     get: protectedProcedure
         .input(z.object({ id: z.string() }))
         .handler(async ({ context, input }) => {
+            const isCloud = env.HOOKI_MODE === 'cloud';
             const project = await db.query.projects.findFirst({
                 where: eq(projects.id, input.id),
                 with: { flows: true },
@@ -24,6 +38,10 @@ export const projectsRouter = pub.router({
 
             if (!project || project.userId !== context.user.id) {
                 throw new Error("Project not found");
+            }
+
+            if (isCloud && project.organizationId !== context.session.activeOrganizationId) {
+                throw new Error("Project not found in this organization");
             }
 
             return project;
@@ -37,12 +55,19 @@ export const projectsRouter = pub.router({
             })
         )
         .handler(async ({ context, input }) => {
+            const isCloud = env.HOOKI_MODE === 'cloud';
             const id = crypto.randomUUID();
+
+            if (isCloud && !context.session.activeOrganizationId) {
+                throw new Error("No active organization selected");
+            }
+
             const [project] = await db
                 .insert(projects)
                 .values({
                     id,
                     userId: context.user.id,
+                    organizationId: isCloud ? context.session.activeOrganizationId as string : null,
                     name: input.name,
                     description: input.description,
                 })
@@ -60,12 +85,17 @@ export const projectsRouter = pub.router({
             })
         )
         .handler(async ({ context, input }) => {
+            const isCloud = env.HOOKI_MODE === 'cloud';
             const existing = await db.query.projects.findFirst({
                 where: eq(projects.id, input.id),
             });
 
             if (!existing || existing.userId !== context.user.id) {
                 throw new Error("Project not found");
+            }
+
+            if (isCloud && existing.organizationId !== context.session.activeOrganizationId) {
+                throw new Error("Project not found in this organization");
             }
 
             const [project] = await db
@@ -84,12 +114,17 @@ export const projectsRouter = pub.router({
     delete: protectedProcedure
         .input(z.object({ id: z.string() }))
         .handler(async ({ context, input }) => {
+            const isCloud = env.HOOKI_MODE === 'cloud';
             const existing = await db.query.projects.findFirst({
                 where: eq(projects.id, input.id),
             });
 
             if (!existing || existing.userId !== context.user.id) {
                 throw new Error("Project not found");
+            }
+
+            if (isCloud && existing.organizationId !== context.session.activeOrganizationId) {
+                throw new Error("Project not found in this organization");
             }
 
             await db.delete(projects).where(eq(projects.id, input.id));

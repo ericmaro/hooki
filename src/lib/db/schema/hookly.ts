@@ -7,7 +7,7 @@ import {
     jsonb,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { users } from "./auth";
+import { users, organizations } from "./auth";
 
 // Projects - User's webhook projects
 export const projects = pgTable("projects", {
@@ -15,6 +15,8 @@ export const projects = pgTable("projects", {
     userId: text("user_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id")
+        .references(() => organizations.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     description: text("description"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
