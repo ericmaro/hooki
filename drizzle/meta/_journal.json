@@ -8,6 +8,20 @@
       "when": 1768555949736,
       "tag": "0000_vengeful_joshua_kane",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768582623379,
+      "tag": "0001_nifty_lord_tyger",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768585965559,
+      "tag": "0002_long_vanisher",
+      "breakpoints": true
     }
   ]
 }
