@@ -10,7 +10,12 @@ export default defineConfig({
   plugins: [
     tanstackStart(),
     devtools(),
-    nitro(),
+    nitro({
+      plugins: ['server/plugins/migrations.ts'],
+      output: {
+        dir: 'dist',
+      },
+    }),
     tailwindcss(),
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],

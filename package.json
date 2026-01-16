@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 5004",
-    "build": "vite build && cp package.json .output/",
+    "build": "vite build && cp package.json dist/",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
@@ -37,6 +37,7 @@
     "ioredis": "^5.9.1",
     "lucide-react": "^0.562.0",
     "nitro": "latest",
+    "nitropack": "latest",
     "postgres": "^3.4.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
