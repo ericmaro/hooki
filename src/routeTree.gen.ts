@@ -23,6 +23,7 @@ import { Route as AppSettingsProfileRouteImport } from './routes/app/settings/pr
 import { Route as AppSettingsNotificationsRouteImport } from './routes/app/settings/notifications'
 import { Route as AppSettingsAppearanceRouteImport } from './routes/app/settings/appearance'
 import { Route as AppSettingsApiKeysRouteImport } from './routes/app/settings/api-keys'
+import { Route as AppProjectProjectIdRouteImport } from './routes/app/project.$projectId'
 import { Route as AppFlowFlowIdRouteImport } from './routes/app/flow.$flowId'
 import { Route as ApiWebhookFlowIdRouteImport } from './routes/api/webhook/$flowId'
 import { Route as ApiWebhookSplatRouteImport } from './routes/api/webhook/$'
@@ -102,6 +103,11 @@ const AppSettingsApiKeysRoute = AppSettingsApiKeysRouteImport.update({
   path: '/settings/api-keys',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProjectProjectIdRoute = AppProjectProjectIdRouteImport.update({
+  id: '/project/$projectId',
+  path: '/project/$projectId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppFlowFlowIdRoute = AppFlowFlowIdRouteImport.update({
   id: '/flow/$flowId',
   path: '/flow/$flowId',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
+  '/app/project/$projectId': typeof AppProjectProjectIdRoute
   '/app/settings/api-keys': typeof AppSettingsApiKeysRoute
   '/app/settings/appearance': typeof AppSettingsAppearanceRoute
   '/app/settings/notifications': typeof AppSettingsNotificationsRoute
@@ -182,6 +189,7 @@ export interface FileRoutesByTo {
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
+  '/app/project/$projectId': typeof AppProjectProjectIdRoute
   '/app/settings/api-keys': typeof AppSettingsApiKeysRoute
   '/app/settings/appearance': typeof AppSettingsAppearanceRoute
   '/app/settings/notifications': typeof AppSettingsNotificationsRoute
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/api/webhook/$': typeof ApiWebhookSplatRoute
   '/api/webhook/$flowId': typeof ApiWebhookFlowIdRoute
   '/app/flow/$flowId': typeof AppFlowFlowIdRoute
+  '/app/project/$projectId': typeof AppProjectProjectIdRoute
   '/app/settings/api-keys': typeof AppSettingsApiKeysRoute
   '/app/settings/appearance': typeof AppSettingsAppearanceRoute
   '/app/settings/notifications': typeof AppSettingsNotificationsRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
+    | '/app/project/$projectId'
     | '/app/settings/api-keys'
     | '/app/settings/appearance'
     | '/app/settings/notifications'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
+    | '/app/project/$projectId'
     | '/app/settings/api-keys'
     | '/app/settings/appearance'
     | '/app/settings/notifications'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/api/webhook/$'
     | '/api/webhook/$flowId'
     | '/app/flow/$flowId'
+    | '/app/project/$projectId'
     | '/app/settings/api-keys'
     | '/app/settings/appearance'
     | '/app/settings/notifications'
@@ -399,6 +411,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsApiKeysRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/project/$projectId': {
+      id: '/app/project/$projectId'
+      path: '/project/$projectId'
+      fullPath: '/app/project/$projectId'
+      preLoaderRoute: typeof AppProjectProjectIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/flow/$flowId': {
       id: '/app/flow/$flowId'
       path: '/flow/$flowId'
@@ -476,6 +495,7 @@ interface AppRouteChildren {
   AppSelectOrganizationRoute: typeof AppSelectOrganizationRoute
   AppIndexRoute: typeof AppIndexRoute
   AppFlowFlowIdRoute: typeof AppFlowFlowIdRoute
+  AppProjectProjectIdRoute: typeof AppProjectProjectIdRoute
   AppSettingsApiKeysRoute: typeof AppSettingsApiKeysRoute
   AppSettingsAppearanceRoute: typeof AppSettingsAppearanceRoute
   AppSettingsNotificationsRoute: typeof AppSettingsNotificationsRoute
@@ -491,6 +511,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSelectOrganizationRoute: AppSelectOrganizationRoute,
   AppIndexRoute: AppIndexRoute,
   AppFlowFlowIdRoute: AppFlowFlowIdRoute,
+  AppProjectProjectIdRoute: AppProjectProjectIdRoute,
   AppSettingsApiKeysRoute: AppSettingsApiKeysRoute,
   AppSettingsAppearanceRoute: AppSettingsAppearanceRoute,
   AppSettingsNotificationsRoute: AppSettingsNotificationsRoute,

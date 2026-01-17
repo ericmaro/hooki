@@ -6,6 +6,7 @@ import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
 import { env } from '@/lib/env'
+import { ThemeProvider } from '@/components/theme-provider'
 
 const getContext = createServerFn({ method: "GET" }).handler(async () => {
   return {
@@ -63,7 +64,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <ThemeProvider>
+        <Outlet />
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }

@@ -4,6 +4,8 @@ import { AppLayout } from '@/components/app-layout'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { rpc } from '@/lib/rpc-client'
 import { useRouter } from '@tanstack/react-router'
+import { useProjectModal } from '@/hooks/use-project-modal'
+import { ProjectModal } from '@/components/project-modal'
 
 const projectsQueryOptions = queryOptions({
     queryKey: ['projects'],
@@ -20,13 +22,15 @@ export const Route = createFileRoute('/app/settings/profile')({
 function ProfileSettings() {
     const router = useRouter()
     const { data: projects = [] } = useSuspenseQuery(projectsQueryOptions)
+    const { projectModalOpen, setProjectModalOpen, openProjectModal, handleCreateProject } = useProjectModal()
 
     return (
         <AppLayout
             projects={projects}
-            onSelectProject={(_projectId) => {
-                router.navigate({ to: '/app' })
+            onSelectProject={(projectId) => {
+                router.navigate({ to: '/app/project/$projectId', params: { projectId } })
             }}
+            onCreateProject={openProjectModal}
         >
             <div className="p-6 max-w-4xl mx-auto">
                 <div className="mb-8">
@@ -46,6 +50,12 @@ function ProfileSettings() {
                     </p>
                 </div>
             </div>
+
+            <ProjectModal
+                open={projectModalOpen}
+                onOpenChange={setProjectModalOpen}
+                onSubmit={handleCreateProject}
+            />
         </AppLayout>
     )
 }

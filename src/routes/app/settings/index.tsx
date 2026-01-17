@@ -9,6 +9,8 @@ import { signOut } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { AppLayout } from '@/components/app-layout'
 import { rpc } from '@/lib/rpc-client'
+import { useProjectModal } from '@/hooks/use-project-modal'
+import { ProjectModal } from '@/components/project-modal'
 
 // Query options for projects
 const projectsQueryOptions = queryOptions({
@@ -44,13 +46,15 @@ function SettingsPage() {
     const router = useRouter()
     const { isCloud } = Route.useRouteContext()
     const { data: projects = [] } = useSuspenseQuery(projectsQueryOptions)
+    const { projectModalOpen, setProjectModalOpen, openProjectModal, handleCreateProject } = useProjectModal()
 
     return (
         <AppLayout
             projects={projects}
-            onSelectProject={(_projectId) => {
-                router.navigate({ to: '/app' })
+            onSelectProject={(projectId) => {
+                router.navigate({ to: '/app/project/$projectId', params: { projectId } })
             }}
+            onCreateProject={openProjectModal}
         >
             <div className="p-6 max-w-4xl mx-auto">
                 <div className="mb-8 flex items-center justify-between">
@@ -261,6 +265,12 @@ function SettingsPage() {
                     </div>
                 )}
             </div>
+
+            <ProjectModal
+                open={projectModalOpen}
+                onOpenChange={setProjectModalOpen}
+                onSubmit={handleCreateProject}
+            />
         </AppLayout>
     )
 }
