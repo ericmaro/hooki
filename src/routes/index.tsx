@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { LandingPage } from '../components/_cloud/landing-page'
+import { LandingPage } from '../components/landing-page'
 
 // Check if we're in cloud mode
 const isCloudMode = typeof process !== 'undefined' && process.env.HOOKI_MODE === 'cloud'
