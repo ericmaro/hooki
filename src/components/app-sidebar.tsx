@@ -66,20 +66,22 @@ export function AppSidebar({
             <div className="w-full px-2 mb-2">
                 <DropdownMenu>
                     <Tooltip>
-                        <TooltipTrigger>
-                            <DropdownMenuTrigger asChild>
-                                <button className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors group relative">
-                                    {activeOrg ? (
-                                        <span className="text-lg font-bold">{activeOrg.name.charAt(0).toUpperCase()}</span>
-                                    ) : (
-                                        <Building2 className="w-6 h-6" />
-                                    )}
-                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-background border border-border flex items-center justify-center">
-                                        <ChevronDown className="w-3 h-3 text-muted-foreground" />
-                                    </div>
-                                </button>
-                            </DropdownMenuTrigger>
-                        </TooltipTrigger>
+                        <TooltipTrigger
+                            render={
+                                <DropdownMenuTrigger>
+                                    <button className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors group relative">
+                                        {activeOrg ? (
+                                            <span className="text-lg font-bold">{activeOrg.name.charAt(0).toUpperCase()}</span>
+                                        ) : (
+                                            <Building2 className="w-6 h-6" />
+                                        )}
+                                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-background border border-border flex items-center justify-center">
+                                            <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                                        </div>
+                                    </button>
+                                </DropdownMenuTrigger>
+                            }
+                        />
                         <TooltipContent side="right">
                             {activeOrg?.name || 'Organization'}
                         </TooltipContent>
