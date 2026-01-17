@@ -1,61 +1,112 @@
-# Hookly
+# Hooki
 
-A webhook proxy application that routes inbound HTTP requests to outbound webhooks with a visual flow editor.
+A lightweight webhook proxy that routes inbound HTTP requests to multiple outbound destinations with a visual flow editor and real-time telemetry.
+
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 ## Features
 
-- **Visual Flow Editor** - Design webhook flows using a drag-and-drop React Flow canvas
-- **Inbound/Outbound Routing** - Define HTTP endpoints that proxy to multiple webhook destinations
-- **Flow Management** - Create, edit, and organize multiple flow configurations
-- **HTTP Logging** - Track all requests through your flows (coming soon)
+- 🎨 **Visual Flow Editor** — Design webhook routing using a drag-and-drop React Flow canvas
+- 🔀 **Multi-destination Routing** — Proxy a single inbound request to multiple outbound webhooks
+- 📊 **Real-time Telemetry** — Monitor request/response logs with replay capabilities
+- 🔐 **HMAC Signature Verification** — Secure your inbound webhooks with signature validation
+- 🏢 **Organization Support** — Multi-tenant project organization
+- 🚀 **Self-hosted or Cloud** — Run on your own infrastructure or use the managed version
 
-## Getting Started
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20+
+- PostgreSQL
+- Redis
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/ericmaro/hooki.git
+cd hooki
+
 # Install dependencies
 pnpm install
 
-# Start development server (port 5004)
+# Configure environment
+cp .env.example .env
+# Edit .env with your database and Redis URLs
+
+# Push database schema
+pnpm db:push
+
+# Start development server
 pnpm dev
 ```
 
-Open [http://localhost:5004](http://localhost:5004) in your browser.
+Open [http://localhost:5004](http://localhost:5004)
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | Required |
+| `REDIS_URL` | Redis connection string | Required |
+| `BETTER_AUTH_SECRET` | 32+ character secret for auth | Required |
+| `BETTER_AUTH_URL` | Base URL for auth callbacks | `http://localhost:5004` |
+| `HOOKI_MODE` | `self-hosted` or `cloud` | `self-hosted` |
+
+> **Note:** In `self-hosted` mode, only one user account can be created. The first signup becomes the admin.
 
 ## Usage
 
-1. **Create a Flow** - Click the "+" button in the sidebar or the empty state CTA
-2. **Configure Inbound Route** - Set the path that will receive incoming webhooks
-3. **Add Outbound Destinations** - Connect to your target webhook URLs
-4. **Save & Deploy** - Your flow is ready to proxy requests
+1. **Create a Project** — Organize your flows into projects
+2. **Create a Flow** — Define a new webhook routing flow
+3. **Configure Inbound Route** — Set the path that receives incoming webhooks
+4. **Add Outbound Destinations** — Connect to your target webhook URLs
+5. **Save & Test** — Your flow is ready to proxy requests
+
+### Webhook URL Format
+
+```
+POST https://your-domain.com/api/webhook/{flowId}
+# or with custom paths
+POST https://your-domain.com/api/webhook/{custom-path}
+```
 
 ## Tech Stack
 
-- [TanStack Start](https://tanstack.com/start) - Full-stack React framework
-- [React Flow](https://reactflow.dev/) - Node-based flow editor
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [shadcn/ui](https://ui.shadcn.com/) - UI components
+- [TanStack Start](https://tanstack.com/start) — Full-stack React framework
+- [React Flow](https://reactflow.dev/) — Visual node-based editor
+- [Better Auth](https://better-auth.com/) — Authentication
+- [Drizzle ORM](https://orm.drizzle.team/) — Type-safe database access
+- [BullMQ](https://bullmq.io/) — Background job processing
+- [shadcn/ui](https://ui.shadcn.com/) — UI components
 
-## Project Structure
+## Scripts
 
+```bash
+pnpm dev          # Start development server
+pnpm build        # Build for production
+pnpm start        # Run production server
+pnpm db:push      # Push schema to database
+pnpm db:studio    # Open Drizzle Studio
+pnpm lint         # Run ESLint
+pnpm test         # Run tests
 ```
-src/
-├── components/
-│   ├── app-layout.tsx      # Main shell layout
-│   ├── app-sidebar.tsx     # Left navigation sidebar
-│   ├── empty-state.tsx     # "Create your first flow" CTA
-│   ├── flow-card.tsx       # Flow summary card
-│   ├── flow-editor.tsx     # React Flow canvas
-│   ├── flow-modal.tsx      # Create/edit flow dialog
-│   └── nodes/
-│       ├── inbound-node.tsx   # HTTP inbound node
-│       └── outbound-node.tsx  # Webhook outbound node
-├── routes/
-│   ├── __root.tsx          # Root layout
-│   ├── index.tsx           # Dashboard page
-│   └── flow.$flowId.tsx    # Flow editor page
-└── styles.css              # Global styles
-```
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for security policies and reporting vulnerabilities.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+> **Note:** Direct commits to `main` are disabled. All changes require a PR.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE) for details.
