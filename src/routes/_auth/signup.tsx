@@ -1,12 +1,34 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { signUp, authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createServerFn } from "@tanstack/react-start";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { env } from "@/lib/env";
+
+// Server function to check if signup should be allowed
+const checkSignupAllowed = createServerFn({ method: "GET" }).handler(async () => {
+    // In self-hosted mode, only allow signup if no users exist yet
+    if (env.HOOKI_MODE === "self-hosted") {
+        const existingUsers = await db.select({ id: users.id }).from(users).limit(1);
+        if (existingUsers.length > 0) {
+            return { allowed: false };
+        }
+    }
+    return { allowed: true };
+});
 
 export const Route = createFileRoute("/_auth/signup")({
+    beforeLoad: async () => {
+        const { allowed } = await checkSignupAllowed();
+        if (!allowed) {
+            throw redirect({ to: "/login" });
+        }
+    },
     component: SignupPage,
 });
 
