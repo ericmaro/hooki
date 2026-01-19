@@ -14,11 +14,11 @@ COPY . .
 
 RUN pnpm run build
 
-RUN ls -la
+COPY . .
 
 # Expose port and start application
 EXPOSE 5004
 
 ENV PORT=5004
 
-CMD ["node", "dist/server/index.mjs"]
+CMD ["pnpm", "run", "start"]
