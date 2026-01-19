@@ -14,6 +14,8 @@ COPY . .
 
 RUN pnpm run build
 
+RUN ls -la
+
 # Expose port and start application
 EXPOSE 5004
 
