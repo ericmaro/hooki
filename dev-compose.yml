@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env-docker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  hooki:
+    build: .
+    ports:
+      - "5004:5004"
+    env_file:
+      - .env-docker
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:
