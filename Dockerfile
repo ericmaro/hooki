@@ -12,6 +12,11 @@ RUN pnpm install --frozen-lockfile
 # Copy application source
 COPY . .
 
+RUN pnpm run build
+
 # Expose port and start application
 EXPOSE 5004
-CMD ["pnpm", "run", "dev", "--host"]
+
+ENV PORT=5004
+
+CMD ["node", "dist/server/index.mjs"]
