@@ -19,4 +19,4 @@ EXPOSE 5004
 
 ENV PORT=5004
 
-CMD ["pnpm", "run", "start"]
+CMD ["sh", "-c", "pnpm run db:migrate && pnpm run start"] 
