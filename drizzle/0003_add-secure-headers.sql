@@ -1,0 +1,1 @@
+ALTER TABLE "flows" ADD COLUMN "secure_headers" jsonb DEFAULT '["authorization"]'::jsonb;
