@@ -98,6 +98,24 @@ async function findFlowByPath(path: string) {
     return null;
 }
 
+// Mask sensitive header values for secure storage in logs
+function maskSecureHeaders(
+    headers: Record<string, string>,
+    secureHeaderNames: string[]
+): Record<string, string> {
+    const masked: Record<string, string> = {};
+    const secureSet = new Set(secureHeaderNames.map(h => h.toLowerCase()));
+
+    for (const [key, value] of Object.entries(headers)) {
+        if (secureSet.has(key.toLowerCase())) {
+            masked[key] = "***";
+        } else {
+            masked[key] = value;
+        }
+    }
+    return masked;
+}
+
 // Deliver webhook to a destination (synchronous)
 async function deliverToDestination(
     destination: { id: string; url: string; headers: Record<string, string> | null; timeoutMs: number },
@@ -232,17 +250,23 @@ export const Route = createFileRoute("/api/webhook/$")({
                     const logId = crypto.randomUUID();
                     const reqHeaders: Record<string, string> = {};
                     request.headers.forEach((value, key) => {
-                        if (!["authorization", "cookie", "x-hooki-signature"].includes(key.toLowerCase())) {
+                        // Exclude only non-forwarding headers (cookie, signature)
+                        // Authorization IS forwarded to outbound destinations
+                        if (!["cookie", "x-hooki-signature"].includes(key.toLowerCase())) {
                             reqHeaders[key] = value;
                         }
                     });
+
+                    // Mask secure header values for storage (default: authorization)
+                    const secureHeaders = (flow.secureHeaders as string[]) || ["authorization"];
+                    const maskedHeaders = maskSecureHeaders(reqHeaders, secureHeaders);
 
                     await db.insert(webhookLogs).values({
                         id: logId,
                         flowId: flow.id,
                         method: request.method,
                         path: inboundPath,
-                        headers: reqHeaders,
+                        headers: maskedHeaders, // Store masked headers in logs
                         body: body || null,
                         sourceIp,
                         status: "processing",

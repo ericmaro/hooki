@@ -7,6 +7,24 @@ import { rateLimitByIp, rateLimitByFlow, getRateLimitHeaders } from "@/lib/secur
 import { webhookDeliveryQueue } from "@/lib/queue";
 import { publishFlowEvent } from "@/lib/events";
 
+// Mask sensitive header values for secure storage in logs
+function maskSecureHeaders(
+    headers: Record<string, string>,
+    secureHeaderNames: string[]
+): Record<string, string> {
+    const masked: Record<string, string> = {};
+    const secureSet = new Set(secureHeaderNames.map(h => h.toLowerCase()));
+
+    for (const [key, value] of Object.entries(headers)) {
+        if (secureSet.has(key.toLowerCase())) {
+            masked[key] = "***";
+        } else {
+            masked[key] = value;
+        }
+    }
+    return masked;
+}
+
 export const Route = createFileRoute("/api/webhook/$flowId")({
     server: {
         handlers: {
@@ -100,18 +118,23 @@ export const Route = createFileRoute("/api/webhook/$flowId")({
                     const url = new URL(request.url);
                     const headers: Record<string, string> = {};
                     request.headers.forEach((value, key) => {
-                        // Exclude sensitive headers
-                        if (!["authorization", "cookie", "x-hooki-signature"].includes(key.toLowerCase())) {
+                        // Exclude only non-forwarding headers (cookie, signature)
+                        // Authorization IS forwarded to outbound destinations
+                        if (!["cookie", "x-hooki-signature"].includes(key.toLowerCase())) {
                             headers[key] = value;
                         }
                     });
+
+                    // Mask secure header values for storage (default: authorization)
+                    const secureHeaders = (flow.secureHeaders as string[]) || ["authorization"];
+                    const maskedHeaders = maskSecureHeaders(headers, secureHeaders);
 
                     await db.insert(webhookLogs).values({
                         id: logId,
                         flowId,
                         method: request.method,
                         path: url.pathname + url.search,
-                        headers,
+                        headers: maskedHeaders, // Store masked headers in logs
                         body: body || null,
                         sourceIp,
                         status: "processing",

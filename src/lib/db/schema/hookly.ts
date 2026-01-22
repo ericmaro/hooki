@@ -47,6 +47,9 @@ export const flows = pgTable("flows", {
     asyncMode: boolean("async_mode").notNull().default(false),
     // Rate limiting
     rateLimitPerMinute: integer("rate_limit_per_minute").default(1000),
+    // Secure headers - header names whose values should be masked with *** in logs
+    // Default includes authorization to protect auth tokens
+    secureHeaders: jsonb("secure_headers").$type<string[]>().default(["authorization"]),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

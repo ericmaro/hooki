@@ -159,6 +159,7 @@ export const flowsRouter = pub.router({
                 rateLimitPerMinute: z.number().min(1).max(100000).optional(),
                 requireSignature: z.boolean().optional(),
                 asyncMode: z.boolean().optional(),
+                secureHeaders: z.array(z.string()).optional(),
             })
         )
         .handler(async ({ context, input }) => {
@@ -192,6 +193,7 @@ export const flowsRouter = pub.router({
                     rateLimitPerMinute: input.rateLimitPerMinute ?? existing.rateLimitPerMinute,
                     requireSignature: input.requireSignature ?? existing.requireSignature,
                     asyncMode: input.asyncMode ?? existing.asyncMode,
+                    secureHeaders: input.secureHeaders ?? existing.secureHeaders,
                     updatedAt: new Date(),
                 })
                 .where(eq(flows.id, input.id))

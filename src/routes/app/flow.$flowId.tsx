@@ -1,13 +1,16 @@
 import { useMemo, useRef, useState } from 'react'
 import { queryOptions, useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
-import { ArrowLeft, Save, ScrollText, ShieldCheck, Zap } from 'lucide-react'
+import { ArrowLeft, Lock, Save, ScrollText, ShieldCheck, X, Zap } from 'lucide-react'
 
 
 import { AppLayout } from '../../components/app-layout'
 import { FlowEditor } from '../../components/flow-editor'
 import { LogsSheet } from '../../components/logs-modal'
+import { Badge } from '../../components/ui/badge'
 import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
+import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from '../../components/ui/popover'
 import { Switch } from '../../components/ui/switch'
 import type { FlowEditorRef } from '../../components/flow-editor';
 import { rpc } from '@/lib/rpc-client'
@@ -39,6 +42,7 @@ function FlowEditorPage() {
     const router = useRouter()
     const { queryClient } = Route.useRouteContext()
     const [logsOpen, setLogsOpen] = useState(false)
+    const [newHeader, setNewHeader] = useState('')
     const editorRef = useRef<FlowEditorRef>(null)
 
     // Fetch flow data
@@ -130,6 +134,73 @@ function FlowEditorPage() {
                                 disabled={updateFlowMutation.isPending || isMultiRoute}
                             />
                         </div>
+                        {/* Secure Headers Popover */}
+                        <Popover>
+                            <PopoverTrigger
+                                className="flex items-center gap-2 px-2 py-1 rounded-md bg-secondary/50 hover:bg-secondary/80 transition-colors cursor-pointer"
+                            >
+                                <Lock className="w-4 h-4 text-purple-500" />
+                                <span className="text-xs text-muted-foreground">
+                                    Secure ({((flow as any).secureHeaders as string[] | null)?.length ?? 1})
+                                </span>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80" align="end">
+                                <PopoverHeader>
+                                    <PopoverTitle>Secure Headers</PopoverTitle>
+                                    <PopoverDescription>
+                                        Header values that will be masked with *** when stored in logs. Full values are still forwarded to destinations.
+                                    </PopoverDescription>
+                                </PopoverHeader>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {(((flow as any).secureHeaders as string[] | null) || ['authorization']).map((header: string) => (
+                                        <Badge
+                                            key={header}
+                                            variant="secondary"
+                                            className="gap-1 pr-1"
+                                        >
+                                            {header}
+                                            <button
+                                                type="button"
+                                                className="ml-1 rounded-full hover:bg-foreground/20 p-0.5"
+                                                onClick={() => {
+                                                    const currentHeaders = ((flow as any).secureHeaders as string[] | null) || ['authorization']
+                                                    const newHeaders = currentHeaders.filter((h: string) => h !== header)
+                                                    updateFlowMutation.mutate({ secureHeaders: newHeaders })
+                                                }}
+                                                disabled={updateFlowMutation.isPending}
+                                            >
+                                                <X className="w-3 h-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
+                                <form
+                                    className="flex gap-2"
+                                    onSubmit={(e) => {
+                                        e.preventDefault()
+                                        const trimmed = newHeader.trim().toLowerCase()
+                                        if (!trimmed) return
+                                        const currentHeaders = ((flow as any).secureHeaders as string[] | null) || ['authorization']
+                                        if (currentHeaders.includes(trimmed)) {
+                                            setNewHeader('')
+                                            return
+                                        }
+                                        updateFlowMutation.mutate({ secureHeaders: [...currentHeaders, trimmed] })
+                                        setNewHeader('')
+                                    }}
+                                >
+                                    <Input
+                                        placeholder="Add header name..."
+                                        value={newHeader}
+                                        onChange={(e) => setNewHeader(e.target.value)}
+                                        className="flex-1 h-8 text-xs"
+                                    />
+                                    <Button type="submit" size="sm" variant="secondary" disabled={updateFlowMutation.isPending || !newHeader.trim()}>
+                                        Add
+                                    </Button>
+                                </form>
+                            </PopoverContent>
+                        </Popover>
                         <Button
                             size="sm"
                             className="gap-2"
