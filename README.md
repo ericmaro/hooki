@@ -46,15 +46,24 @@ Open [http://localhost:5004](http://localhost:5004)
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | Required |
-| `REDIS_URL` | Redis connection string | Required |
-| `BETTER_AUTH_SECRET` | 32+ character secret for auth | Required |
-| `BETTER_AUTH_URL` | Base URL for auth callbacks | `http://localhost:5004` |
-| `HOOKI_MODE` | `self-hosted` or `cloud` | `self-hosted` |
+| Variable               | Description                                             | Default                 |
+| ---------------------- | ------------------------------------------------------- | ----------------------- |
+| `DATABASE_URL`         | PostgreSQL connection string                            | Required                |
+| `REDIS_URL`            | Redis connection string                                 | Required                |
+| `BETTER_AUTH_SECRET`   | 32+ character secret for auth                           | Required                |
+| `BETTER_AUTH_URL`      | Base URL for auth callbacks                             | `http://localhost:5004` |
+| `HOOKI_MODE`           | `self-hosted` or `cloud`                                | `self-hosted`           |
+| `HOOKI_ADMIN_EMAIL`    | Optional self-hosted admin email enforced on startup    | Not set                 |
+| `HOOKI_ADMIN_PASSWORD` | Optional self-hosted admin password enforced on startup | Not set                 |
+| `HOOKI_ADMIN_NAME`     | Optional self-hosted admin display name                 | `Admin` for bootstrap   |
 
 > **Note:** In `self-hosted` mode, only one user account can be created. The first signup becomes the admin.
+
+### Self-Hosted Admin Recovery
+
+For self-hosted installs, set `HOOKI_ADMIN_EMAIL` and `HOOKI_ADMIN_PASSWORD` to create the first user automatically or recover access to the existing single user. When either value is present, Hooki treats the provided values as the source of truth on every restart. Remove the variables after recovery if you want to manage credentials only through the app.
+
+If no users exist yet, both `HOOKI_ADMIN_EMAIL` and `HOOKI_ADMIN_PASSWORD` are required. If one self-hosted user already exists, startup updates only the provided fields and revokes existing sessions when the email or password changes.
 
 ## Usage
 
