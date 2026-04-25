@@ -1,8 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { organization } from "better-auth/plugins";
+import { emailOTP, organization } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "./db/schema";
+import { sendPasswordResetOtpEmail } from "./email/resend";
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5004",
@@ -21,6 +22,7 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
+        revokeSessionsOnPasswordReset: true,
     },
     user: {
         additionalFields: {
@@ -38,6 +40,20 @@ export const auth = betterAuth({
         updateAge: 60 * 60 * 24, // 1 day
     },
     plugins: [
+        emailOTP({
+            otpLength: 6,
+            expiresIn: 300,
+            allowedAttempts: 3,
+            storeOTP: "hashed",
+            disableSignUp: true,
+            async sendVerificationOTP({ email, otp, type }) {
+                if (type !== "forget-password") {
+                    return;
+                }
+
+                await sendPasswordResetOtpEmail({ email, otp });
+            },
+        }),
         organization(),
     ],
 });

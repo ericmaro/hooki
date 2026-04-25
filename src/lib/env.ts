@@ -1,49 +1,69 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 /**
  * Environment variable schema definition for Hooki.
  */
 const envSchema = z.object({
-    // Core Infrastructure
-    DATABASE_URL: z.string().url().optional(),
-    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-    APP_NAME: z.string().default("Hooki"),
-    HOOKI_MODE: z.enum(["cloud", "self-hosted"]).default("self-hosted"),
+  // Core Infrastructure
+  DATABASE_URL: z.string().url().optional(),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
+  APP_NAME: z.string().default('Hooki'),
+  HOOKI_MODE: z.enum(['cloud', 'self-hosted']).default('self-hosted'),
 
-    // Authentication
-    BETTER_AUTH_SECRET: z.string().min(10).optional(),
-    BETTER_AUTH_URL: z.string().url().optional(),
+  // Authentication
+  BETTER_AUTH_SECRET: z.string().min(10).optional(),
+  BETTER_AUTH_URL: z.string().url().optional(),
+  HOOKI_ADMIN_EMAIL: z.string().optional(),
+  HOOKI_ADMIN_PASSWORD: z.string().optional(),
+  HOOKI_ADMIN_NAME: z.string().optional(),
 
-    // Redis (for BullMQ)
-    REDIS_URL: z.string().optional(),
-});
+  // Transactional Email
+  RESEND_API_KEY: z.string().optional(),
+  RESEND_FROM_EMAIL: z.string().optional(),
+
+  // Redis (for BullMQ)
+  REDIS_URL: z.string().optional(),
+})
 
 // Process and validate environment variables
 const processEnv = {
-    DATABASE_URL: process.env.DATABASE_URL,
-    NODE_ENV: process.env.NODE_ENV,
-    APP_NAME: process.env.APP_NAME,
-    HOOKI_MODE: process.env.HOOKI_MODE,
-    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
-    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-    REDIS_URL: process.env.REDIS_URL,
-};
-
-const parsed = envSchema.safeParse(processEnv);
-
-if (!parsed.success) {
-    console.error("❌ Invalid environment variables:", parsed.error.flatten().fieldErrors);
+  DATABASE_URL: process.env.DATABASE_URL,
+  NODE_ENV: process.env.NODE_ENV,
+  APP_NAME: process.env.APP_NAME,
+  HOOKI_MODE: process.env.HOOKI_MODE,
+  BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+  BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+  HOOKI_ADMIN_EMAIL: process.env.HOOKI_ADMIN_EMAIL,
+  HOOKI_ADMIN_PASSWORD: process.env.HOOKI_ADMIN_PASSWORD,
+  HOOKI_ADMIN_NAME: process.env.HOOKI_ADMIN_NAME,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
+  REDIS_URL: process.env.REDIS_URL,
 }
 
-export const env = parsed.success ? parsed.data : processEnv as z.infer<typeof envSchema>;
+const parsed = envSchema.safeParse(processEnv)
+
+if (!parsed.success) {
+  console.error(
+    '❌ Invalid environment variables:',
+    parsed.error.flatten().fieldErrors,
+  )
+}
+
+export const env = parsed.success
+  ? parsed.data
+  : (processEnv as z.infer<typeof envSchema>)
 
 /**
  * Helper to check if critical services are configured
  */
 export const checkServiceHealth = () => {
-    return {
-        database: !!env.DATABASE_URL,
-        auth: !!(env.BETTER_AUTH_SECRET && env.BETTER_AUTH_URL),
-        redis: !!env.REDIS_URL,
-    };
-};
+  return {
+    database: !!env.DATABASE_URL,
+    auth: !!(env.BETTER_AUTH_SECRET && env.BETTER_AUTH_URL),
+    email: !!(env.RESEND_API_KEY && env.RESEND_FROM_EMAIL),
+    redis: !!env.REDIS_URL,
+  }
+}

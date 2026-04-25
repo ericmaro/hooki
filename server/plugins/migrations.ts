@@ -1,16 +1,17 @@
-import { definePlugin } from "nitro";
-import { runMigrations } from "../../src/lib/db/migrate";
+import { definePlugin } from 'nitro'
+import { runMigrations } from '../../src/lib/db/migrate'
+import { syncSelfHostedAdminFromEnv } from '../../src/lib/startup/admin-credentials'
 
 export default definePlugin(async () => {
-    // Only run migrations in production
-    if (process.env.NODE_ENV === "production") {
-        try {
-            await runMigrations();
-        } catch (error) {
-            console.error("Failed to run migrations on startup:", error);
-            // You can choose to throw here if you want to prevent server start on migration failure
-            // throw error;
-        }
-    }
-});
+  if (process.env.NODE_ENV === 'test' || process.env.VITEST) {
+    return
+  }
 
+  try {
+    await runMigrations()
+    await syncSelfHostedAdminFromEnv()
+  } catch (error) {
+    console.error('Failed to complete startup database tasks:', error)
+    throw error
+  }
+})
