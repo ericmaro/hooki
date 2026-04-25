@@ -17,6 +17,7 @@ import { Route as RpcSplatRouteImport } from './routes/rpc/$'
 import { Route as AppSelectOrganizationRouteImport } from './routes/app/select-organization'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
 import { Route as AppSettingsSecurityRouteImport } from './routes/app/settings/security'
 import { Route as AppSettingsProfileRouteImport } from './routes/app/settings/profile'
@@ -70,6 +71,11 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => AuthRoute,
 } as any)
 const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
@@ -156,6 +162,7 @@ const AppSettingsCloudBillingIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/app/select-organization': typeof AppSelectOrganizationRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/app/select-organization': typeof AppSelectOrganizationRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/app/select-organization': typeof AppSelectOrganizationRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/forgot-password'
     | '/login'
     | '/signup'
     | '/app/select-organization'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgot-password'
     | '/login'
     | '/signup'
     | '/app/select-organization'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/app'
+    | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/signup'
     | '/app/select-organization'
@@ -367,6 +379,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/forgot-password': {
+      id: '/_auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
     '/app/settings/': {
@@ -478,12 +497,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthOnboardingOrganizationRoute: typeof AuthOnboardingOrganizationRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthOnboardingOrganizationRoute: AuthOnboardingOrganizationRoute,

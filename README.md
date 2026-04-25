@@ -53,6 +53,8 @@ Open [http://localhost:5004](http://localhost:5004)
 | `BETTER_AUTH_SECRET`   | 32+ character secret for auth                           | Required                |
 | `BETTER_AUTH_URL`      | Base URL for auth callbacks                             | `http://localhost:5004` |
 | `HOOKI_MODE`           | `self-hosted` or `cloud`                                | `self-hosted`           |
+| `RESEND_API_KEY`       | Resend API key for password reset OTP emails            | Required for email      |
+| `RESEND_FROM_EMAIL`    | Sender address for password reset OTP emails            | Required for email      |
 | `HOOKI_ADMIN_EMAIL`    | Optional self-hosted admin email enforced on startup    | Not set                 |
 | `HOOKI_ADMIN_PASSWORD` | Optional self-hosted admin password enforced on startup | Not set                 |
 | `HOOKI_ADMIN_NAME`     | Optional self-hosted admin display name                 | `Admin` for bootstrap   |

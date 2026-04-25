@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
-import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
+import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,8 +93,8 @@ function LoginPage() {
                         <div className="space-y-0.5">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor={field.name} className="text-sm">Password</Label>
-                                <Link to="/signup" className="text-sm text-primary hover:underline">
-                                    Forgot your Password?
+                                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                                    Forgot your password?
                                 </Link>
                             </div>
                             <Input

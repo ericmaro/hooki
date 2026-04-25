@@ -19,6 +19,10 @@ const envSchema = z.object({
   HOOKI_ADMIN_PASSWORD: z.string().optional(),
   HOOKI_ADMIN_NAME: z.string().optional(),
 
+  // Transactional Email
+  RESEND_API_KEY: z.string().optional(),
+  RESEND_FROM_EMAIL: z.string().optional(),
+
   // Redis (for BullMQ)
   REDIS_URL: z.string().optional(),
 })
@@ -34,6 +38,8 @@ const processEnv = {
   HOOKI_ADMIN_EMAIL: process.env.HOOKI_ADMIN_EMAIL,
   HOOKI_ADMIN_PASSWORD: process.env.HOOKI_ADMIN_PASSWORD,
   HOOKI_ADMIN_NAME: process.env.HOOKI_ADMIN_NAME,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
   REDIS_URL: process.env.REDIS_URL,
 }
 
@@ -57,6 +63,7 @@ export const checkServiceHealth = () => {
   return {
     database: !!env.DATABASE_URL,
     auth: !!(env.BETTER_AUTH_SECRET && env.BETTER_AUTH_URL),
+    email: !!(env.RESEND_API_KEY && env.RESEND_FROM_EMAIL),
     redis: !!env.REDIS_URL,
   }
 }
